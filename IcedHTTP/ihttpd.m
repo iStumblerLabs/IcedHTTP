@@ -16,8 +16,9 @@ int main(int argc, char** argv)
         [server registerPrototype:[IHTTPHandler handlerWithRequestBlock:^(IHTTPRequest* request){
             return YES;
         } responseBlock: ^(IHTTPRequest* request, IHTTPResponse* response) {
+            NSString* messageString = [NSString stringWithFormat:@"Hello IcedHttp @ %@", [NSDate date]];
             [response sendStatus:200];
-            [response sendBody:[@"Hello IcedHttp" dataUsingEncoding:NSUTF8StringEncoding]]; // TODO one for each -s argument
+            [response sendBody:[messageString dataUsingEncoding:NSUTF8StringEncoding]]; // TODO one for each -s argument
             [response completeResponse];
             return (NSUInteger)200;
         }]];

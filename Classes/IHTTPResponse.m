@@ -39,6 +39,15 @@
 	return response;
 }
 
+#pragma mark -
+
+- (NSDictionary*) responseHeaders
+{
+    return CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(messageRef));
+}
+
+#pragma mark
+
 - (void)sendStatus:(NSInteger)httpStatus
 {
     messageRef = CFHTTPMessageCreateResponse(kCFAllocatorDefault, httpStatus, NULL, kCFHTTPVersion1_1);
@@ -90,8 +99,11 @@
 
 	if (self.output) {
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleDataAvailableNotification object:self.output];
+        // TODO [self.output synchronizeFile];
+        [self.output closeFile];
 		self.output = nil;
 	}
+    
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(responseDidComplete:)]) {
         [self.delegate responseDidComplete:self];

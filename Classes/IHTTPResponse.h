@@ -38,6 +38,8 @@
 /*! @abstract outputException the NSException which was encountered trying to write to the output */
 @property(nonatomic, retain) NSException* outputException;
 
+@property(nonatomic, readonly) NSDictionary* responseHeaders;
+
 #pragma mark - Class Methods
 
 /*! @param outputHandle the NSFileHandle for the response

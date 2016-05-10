@@ -24,24 +24,22 @@
 
 #pragma mark - Properties
 
-- (CFHTTPMessageRef) requestRef
-{
-    return messageRef;
-}
+
+
 
 - (NSString*) requestMethod
 {
-    return CFBridgingRelease(CFHTTPMessageCopyRequestMethod(self.requestRef));
+    return CFBridgingRelease(CFHTTPMessageCopyRequestMethod(messageRef));
 }
 
 - (NSDictionary*) requestHeaders
 {
-    return CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(self.requestRef));
+    return CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(messageRef));
 }
 
 - (NSURL*) requestURL
 {
-    return CFBridgingRelease(CFHTTPMessageCopyRequestURL(self.requestRef));
+    return CFBridgingRelease(CFHTTPMessageCopyRequestURL(messageRef));
 }
 
 #pragma mark -
@@ -84,6 +82,7 @@
 - (void) completeRequest
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleDataAvailableNotification object:self.input];
+    [self.input closeFile];
 }
 
 #pragma mark -

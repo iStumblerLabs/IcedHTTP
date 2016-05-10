@@ -27,17 +27,6 @@
 NSUInteger const IHTTPServerDefaultPort = 8080;
 NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChangedNotification";
 
-@interface IHTTPServerTask : NSObject
-@property(nonatomic, retain) IHTTPRequest* request;
-@property(nonatomic, retain) IHTTPResponse* response;
-@property(nonatomic, retain) IHTTPHandler* handler;
-@end
-
-#pragma mark -
-
-@implementation IHTTPServerTask
-@end
-
 #pragma mark -
 
 @implementation IHTTPServer
@@ -134,7 +123,7 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 {
 	self.serverError = nil;
 	self.serverState = IHTTPServerStateStarting;
-    self.serverTasks = [NSMutableSet new];
+    self.serverRequests = [NSMutableSet new];
 
 	serverSocket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL);
 	if (!serverSocket) {
@@ -189,12 +178,11 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 		object:nil];
 
     // complete all serverTasks
-    for (IHTTPServerTask* task in self.serverTasks) {
-        [task.request.input closeFile];
-        [task.response.output closeFile];
+    for (IHTTPRequest* request in self.serverRequests) {
+        [request.input closeFile];
     }
-    [self.serverTasks removeAllObjects];
-    self.serverTasks = nil;
+    [self.serverRequests removeAllObjects];
+    self.serverRequests = nil;
 
 		
 	if (serverSocket) {
@@ -232,13 +220,10 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	NSFileHandle* requestHandle = [userInfo objectForKey:NSFileHandleNotificationFileHandleItem];
 
     if(requestHandle) {
-        IHTTPServerTask* task = [IHTTPServerTask new];
-        task.request = [IHTTPRequest requestWithInput:requestHandle];
-        task.request.delegate = self;
-        task.response = [IHTTPResponse responseWithOutput:requestHandle];
-        task.response.delegate = self;
-        [self.serverTasks addObject:task];
-        [task.request readHeaders]; // set the handler when the header read is complete
+        IHTTPRequest* request = [IHTTPRequest requestWithInput:requestHandle];
+        request.delegate = self;
+        [self.serverRequests addObject:request];
+        [request readHeaders]; // set the handler when the header read is complete
     }
     
     // wait for the next connection
@@ -249,26 +234,23 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 
 - (void) request:(IHTTPRequest*) request parsedHeaders:(NSDictionary*) headers
 {
-    for (IHTTPServerTask* task in self.serverTasks) {
-        if (task.request == request) {
-            NSLog(@"request:%@ parsedHeaders:%@", request, headers);
-            IHTTPHandler* prototype = [self prototypeForRequest:request];
-            task.handler = [prototype handlerForRequest:request];
-            [task.handler handleRequest:task.request withResponse:task.response];
-            return;
-        }
-    }
+    // NSLog(@"request:%@ parsedHeaders:%@", request, headers);
+    IHTTPHandler* prototype = [self prototypeForRequest:request];
+    IHTTPHandler* handler = [prototype handlerForRequest:request];
+    IHTTPResponse* response = [IHTTPResponse responseWithOutput:request.input];
+    [handler handleRequest:request withResponse:response];
+    return;
 }
 
 #pragma mark - IHTTPResponseDelegate
 
 - (void) responseDidComplete:(IHTTPResponse *)response
 {
-    for (IHTTPServerTask* task in self.serverTasks) {
-        if (task.response == response) {
-            NSLog(@"responseDidComplete:%@", response);
-            [task.request completeRequest];
-            [self.serverTasks removeObject:task];
+    for (IHTTPRequest* request in self.serverRequests) {
+        if (response.output == request.input) {
+            // NSLog(@"responseDidComplete:%@ sentHeaders:%@", response, response.responseHeaders);
+            [request completeRequest];
+            [self.serverRequests removeObject:request];
             return;
         }
     }

@@ -56,7 +56,7 @@ extern NSString* const IHTTPServerStateChangedNotification;
 
 @property(nonatomic, retain) NSMutableArray* handlerPrototypes;
 
-@property(nonatomic, retain) NSMutableSet* serverTasks;
+@property(nonatomic, retain) NSMutableSet* serverRequests;
 
 #pragma mark -
 
