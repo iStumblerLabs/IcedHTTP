@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "758BBB0B1CDBC87C0073A7B9"
-               BuildableName = "IcedHTTP.framework"
-               BlueprintName = "IcedHTTP"
+               BlueprintIdentifier = "756F24871CDFFAB100DBD692"
+               BuildableName = "headerdoc"
+               BlueprintName = "headerdoc"
                ReferencedContainer = "container:IcedHTTP.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,9 +45,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "758BBB0B1CDBC87C0073A7B9"
-            BuildableName = "IcedHTTP.framework"
-            BlueprintName = "IcedHTTP"
+            BlueprintIdentifier = "756F24871CDFFAB100DBD692"
+            BuildableName = "headerdoc"
+            BlueprintName = "headerdoc"
             ReferencedContainer = "container:IcedHTTP.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -63,9 +63,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "758BBB0B1CDBC87C0073A7B9"
-            BuildableName = "IcedHTTP.framework"
-            BlueprintName = "IcedHTTP"
+            BlueprintIdentifier = "756F24871CDFFAB100DBD692"
+            BuildableName = "headerdoc"
+            BlueprintName = "headerdoc"
             ReferencedContainer = "container:IcedHTTP.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
