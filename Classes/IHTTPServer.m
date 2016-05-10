@@ -149,7 +149,7 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	
 	if (CFSocketSetAddress(serverSocket, addressData) != kCFSocketSuccess) {
 		[self errorWithName:@"Unable to bind socket to address."];
-		return;
+		goto exit;
 	}
 
 	self.listeningHandle = [[NSFileHandle alloc] initWithFileDescriptor:fileDescriptor closeOnDealloc:YES];
@@ -162,6 +162,9 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	[self.listeningHandle acceptConnectionInBackgroundAndNotify];
 	
 	self.serverState = IHTTPServerStateRunning;
+
+exit:
+    CFRelease(addressData);
 }
 
 - (void)stopServer
