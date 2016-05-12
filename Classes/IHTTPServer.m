@@ -124,6 +124,13 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	self.serverError = nil;
 	self.serverState = IHTTPServerStateStarting;
     self.serverRequests = [NSMutableSet new];
+    
+    [self registerPrototype:[IHTTPHandler handlerWithResponseBlock:^NSUInteger(IHTTPRequest *request, IHTTPResponse *response) {
+        NSUInteger error = 404;
+        [response sendStatus:404];
+        [response completeResponse];
+        return error;
+    }]];
 
 	serverSocket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL);
 	if (!serverSocket) {
@@ -199,15 +206,6 @@ exit:
 
 #pragma mark -
 
-//
-// errorWithName:
-//
-// Stops the server and sets the last error to "errorName", localized using the
-// IHTTPServerErrors.strings file (if present).
-//
-// Parameters:
-//    errorName - the description used for the error
-//
 - (void)errorWithName:(NSString *)errorName
 {
 	self.serverError = [NSError errorWithDomain:@"IHTTPServerError" code:0 userInfo:@{
@@ -239,8 +237,8 @@ exit:
 {
     // NSLog(@"request:%@ parsedHeaders:%@", request, headers);
     IHTTPHandler* prototype = [self prototypeForRequest:request];
-    IHTTPHandler* handler = [prototype handlerForRequest:request];
-    IHTTPResponse* response = [IHTTPResponse responseWithOutput:request.input];
+    __block IHTTPHandler* handler = [prototype handlerForRequest:request];
+    __block IHTTPResponse* response = [IHTTPResponse responseWithOutput:request.input];
     [handler handleRequest:request withResponse:response];
     return;
 }
