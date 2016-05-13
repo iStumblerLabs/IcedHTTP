@@ -127,7 +127,11 @@
 
 - (BOOL)canHandleRequest:(IHTTPRequest*)aRequest
 {
-    return self.requestBlock(aRequest);
+    BOOL canHandle = YES;
+    if (self.requestBlock) {
+        canHandle = self.requestBlock(aRequest);
+    }
+    return canHandle;
 }
 
 - (NSUInteger)handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response

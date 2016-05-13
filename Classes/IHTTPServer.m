@@ -100,6 +100,12 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	NSLog(@"HTTPServer error: %@", serverError);
 }
 
+- (NSURL*) rootURL
+{
+    // TODO get the .local hostname
+    return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:%lu/", (unsigned long)self.serverPort]];
+}
+
 #pragma mark - Prototype Registory
 
 - (void)registerPrototype:(IHTTPHandler *)prototype

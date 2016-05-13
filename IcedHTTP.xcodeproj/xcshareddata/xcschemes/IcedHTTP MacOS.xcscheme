@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "756F246E1CDFC40100DBD692"
                BuildableName = "IcedHTTP.framework"
-               BlueprintName = "IcedHTTP MacOS"
+               BlueprintName = "IcedHTTP-MacOS"
                ReferencedContainer = "container:IcedHTTP.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,7 +47,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "756F246E1CDFC40100DBD692"
             BuildableName = "IcedHTTP.framework"
-            BlueprintName = "IcedHTTP MacOS"
+            BlueprintName = "IcedHTTP-MacOS"
             ReferencedContainer = "container:IcedHTTP.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,7 +65,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "756F246E1CDFC40100DBD692"
             BuildableName = "IcedHTTP.framework"
-            BlueprintName = "IcedHTTP MacOS"
+            BlueprintName = "IcedHTTP-MacOS"
             ReferencedContainer = "container:IcedHTTP.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

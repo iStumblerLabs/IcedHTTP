@@ -58,6 +58,9 @@ extern NSString* const IHTTPServerStateChangedNotification;
 
 @property(nonatomic, retain) NSMutableSet* serverRequests;
 
+/*! @abstract the rootURL of the server */
+@property(nonatomic, readonly) NSURL* rootURL;
+
 #pragma mark -
 
 /*! @abstract sharedIHTTPServer server on 8080 */
