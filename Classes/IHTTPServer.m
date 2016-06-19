@@ -235,7 +235,7 @@ exit:
     [self.serverRequests removeAllObjects];
     self.serverRequests = nil;
 
-		
+
 	if (serverSocket) {
 		CFSocketInvalidate(serverSocket);
 		CFRelease(serverSocket);
