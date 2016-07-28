@@ -5,7 +5,6 @@
 /*!
     @fuction main
     @abstract create and run an IHTTPServer with some example handlers
-
 */
 int main(int argc, char** argv)
 {
