@@ -41,7 +41,18 @@
 
 #pragma mark -
 
-- (NSDictionary*) responseHeaders
+- (NSInteger)responseStatus
+{
+    NSInteger status = 0;
+    
+    if (messageRef) {
+        status = CFHTTPMessageGetResponseStatusCode(messageRef);
+    }
+    
+    return status;
+}
+
+- (NSDictionary*)responseHeaders
 {
     return CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(messageRef));
 }
@@ -103,11 +114,18 @@
         [self.output closeFile];
 		self.output = nil;
 	}
-    
-    
+
     if (self.delegate && [self.delegate respondsToSelector:@selector(responseDidComplete:)]) {
         [self.delegate responseDidComplete:self];
     }
+}
+
+#pragma mark - NSObject
+
+- (NSString*)description
+{
+    return [NSString stringWithFormat:@"<%@:%p http status: %ld headers: %@>",
+        NSStringFromClass([self class]), self, self.responseStatus, self.responseHeaders];
 }
 
 //

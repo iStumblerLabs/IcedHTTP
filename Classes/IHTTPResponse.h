@@ -38,6 +38,10 @@
 /*! @abstract outputException the NSException which was encountered trying to write to the output */
 @property(nonatomic, retain) NSException* outputException;
 
+/*! @abstract HTTP response status code set to the client, or 0 if it hasn't been sent */
+@property(nonatomic, readonly) NSInteger responseStatus;
+
+/*! @abstract HTTP response headers sent to the client, or nil if headers have not been sent */
 @property(nonatomic, readonly) NSDictionary* responseHeaders;
 
 #pragma mark - Class Methods

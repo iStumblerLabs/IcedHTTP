@@ -5,6 +5,7 @@
 @implementation IHTTPRequest
 {
     CFHTTPMessageRef messageRef;
+    NSDate* requestTime;
 }
 
 + (IHTTPRequest*) requestWithMessageRef:(CFHTTPMessageRef) messageRef
@@ -14,32 +15,42 @@
 
 #pragma mark - Initilizers
 
-- (id) initWithMessageRef:(CFHTTPMessageRef) mRef
+- (id)init
 {
     if (self = [super init]) {
-        messageRef = mRef; // CFRetain?
+        requestTime = [NSDate date];
+    }
+    return self;
+}
+
+- (id) initWithMessageRef:(CFHTTPMessageRef) mRef
+{
+    if (self = [self init]) {
+        messageRef = mRef;
     }
     return self;
 }
 
 #pragma mark - Properties
 
-
-
-
 - (NSString*) requestMethod
 {
-    return CFBridgingRelease(CFHTTPMessageCopyRequestMethod(messageRef));
+    return (messageRef ? CFBridgingRelease(CFHTTPMessageCopyRequestMethod(messageRef)) : nil);
 }
 
 - (NSDictionary*) requestHeaders
 {
-    return CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(messageRef));
+    return (messageRef ? CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(messageRef)) : nil);
 }
 
 - (NSURL*) requestURL
 {
-    return CFBridgingRelease(CFHTTPMessageCopyRequestURL(messageRef));
+    return (messageRef ? CFBridgingRelease(CFHTTPMessageCopyRequestURL(messageRef)) : nil);
+}
+
+- (NSDate*) requestTime
+{
+    return requestTime;
 }
 
 #pragma mark -
@@ -110,6 +121,14 @@
     else {
         [incomingFileHandle waitForDataInBackgroundAndNotify];
     }
+}
+
+#pragma mark - NSObject
+
+- (NSString*)description
+{
+    return [NSString stringWithFormat:@"<%@:%p on: %@ headers: %@>",
+        NSStringFromClass([self class]), self, self.requestTime, self.requestHeaders];
 }
 
 @end

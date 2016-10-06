@@ -26,6 +26,9 @@
 /*! @abstract HTTP Request URL */
 @property(nonatomic, readonly) NSURL* requestURL;
 
+/*! @abstract HTTP Reqeust Time */
+@property(nonatomic, readonly) NSDate* requestTime;
+
 #pragma mark -
 
 /*! @abstract create a request object ewith the file handle provided */

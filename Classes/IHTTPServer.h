@@ -32,6 +32,19 @@ typedef enum
 }
 IHTTPServerState;
 
+/*! @enum IHTTPDebugLevel
+    @abstract IcedHTTP Logging Levels */
+typedef enum
+{
+    IHTTPServerLogginSilent,
+    IHTTPServerLoggingErrors,
+    IHTTPServerLoggingWarnings,
+    IHTTPServerLoggingRequests,
+    IHTTPServerLoggingResponses,
+    IHTTPServerLoggingDebug
+}
+IHTTPServerLoggingLevel;
+
 /*! @const IHTTPServerDefaultPort */
 extern NSUInteger const IHTTPServerDefaultPort;
 
@@ -47,6 +60,9 @@ extern NSString* const IHTTPServerStateChangedNotification;
 
 /*! @abstract the current state of the server */
 @property(nonatomic, assign) IHTTPServerState serverState;
+
+/*! @abstract the current logging level of the server */
+@property(nonatomic, assign) IHTTPServerLoggingLevel loggingLevel;
 
 /*! @abstract the last error encountered while processing incoming requests */
 @property(nonatomic, retain) NSError* serverError;
@@ -70,6 +86,9 @@ extern NSString* const IHTTPServerStateChangedNotification;
 
 /*! @abstract registerPrototype */
 - (void) registerPrototype:(IHTTPHandler*) prototype;
+
+/*! @abstract resetPrototypes */
+- (void) resetPrototypes;
 
 /*! @abstract startServer */
 - (void) startServer;

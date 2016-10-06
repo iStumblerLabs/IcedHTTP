@@ -58,7 +58,8 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	if (self != nil) {
         self.serverPort = IHTTPServerDefaultPort;
 		self.serverState = IHTTPServerStateIdle;
-        self.handlerPrototypes = [NSMutableArray new];
+        self.loggingLevel = IHTTPServerLoggingErrors;
+        [self resetPrototypes];
 	}
 	return self;
 }
@@ -97,7 +98,10 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	[self stopServer];
 	
 	self.serverState = IHTTPServerStateIdle;
-	NSLog(@"HTTPServer error: %@", serverError);
+    
+    if (self.loggingLevel >= IHTTPServerLoggingErrors) {
+        NSLog(@"%@ error: %@", NSStringFromClass([self class]), serverError);
+    }
 }
 
 - (NSURL*) rootURL
@@ -111,6 +115,10 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 - (void)registerPrototype:(IHTTPHandler *)prototype
 {
 	[self.handlerPrototypes addObject:prototype];
+
+    if (self.loggingLevel >= IHTTPServerLoggingDebug) {
+        NSLog(@"%@ registerPrototype: %@", NSStringFromClass([self class]), prototype);
+    }
 }
 
 - (IHTTPHandler *)prototypeForRequest:(IHTTPRequest *)request
@@ -123,13 +131,9 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
     return nil;
 }
 
-#pragma mark -
-
-- (void)startServer
+- (void)resetPrototypes
 {
-	self.serverError = nil;
-	self.serverState = IHTTPServerStateStarting;
-    self.serverRequests = [NSMutableSet new];
+    self.handlerPrototypes = [NSMutableArray new];
     
     [self registerPrototype:[IHTTPHandler handlerWithResponseBlock:^NSUInteger(IHTTPRequest *request, IHTTPResponse *response) {
         NSUInteger error = 404;
@@ -137,52 +141,83 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
         [response completeResponse];
         return error;
     }]];
+    
+    if (self.loggingLevel >= IHTTPServerLoggingDebug) {
+        NSLog(@"%@ resetPrototypes", NSStringFromClass([self class]));
+    }
+}
 
-	serverSocket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL);
-	if (!serverSocket) {
-		[self errorWithName:@"Unable to create socket."];
-		return;
-	}
+#pragma mark -
 
-	int reuse = true;
-	int fileDescriptor = CFSocketGetNative(serverSocket);
-	if (setsockopt(fileDescriptor, SOL_SOCKET, SO_REUSEADDR,
-		(void *)&reuse, sizeof(int)) != 0) {
-		[self errorWithName:@"Unable to set socket options."];
-		return;
-	}
-	
-	struct sockaddr_in address;
-	memset(&address, 0, sizeof(address));
-	address.sin_len = sizeof(address);
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = htonl(INADDR_ANY);
-	address.sin_port = htons(self.serverPort);
-	CFDataRef addressData = CFDataCreate(kCFAllocatorDefault, (const UInt8 *)&address, sizeof(address));
-	
-	if (CFSocketSetAddress(serverSocket, addressData) != kCFSocketSuccess) {
-		[self errorWithName:@"Unable to bind socket to address."];
-		goto exit;
-	}
+- (void)startServer
+{
+    CFDataRef addressData = nil;
+    
+    if ((self.serverState != IHTTPServerStateStarting) && (self.serverState != IHTTPServerStateRunning))
+    {
+        self.serverError = nil;
+        self.serverState = IHTTPServerStateStarting;
+        self.serverRequests = [NSMutableSet new];
+        
+        if (self.loggingLevel >= IHTTPServerLoggingDebug) {
+            NSLog(@"%@ startServer", NSStringFromClass([self class]));
+        }
+        
+        serverSocket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL);
+        if (!serverSocket) {
+            [self errorWithName:@"Unable to create socket."];
+            return;
+        }
 
-	self.listeningHandle = [[NSFileHandle alloc] initWithFileDescriptor:fileDescriptor closeOnDealloc:YES];
+        int reuse = true;
+        int fileDescriptor = CFSocketGetNative(serverSocket);
+        if (setsockopt(fileDescriptor, SOL_SOCKET, SO_REUSEADDR,
+            (void *)&reuse, sizeof(int)) != 0) {
+            [self errorWithName:@"Unable to set socket options."];
+            return;
+        }
+        
+        struct sockaddr_in address;
+        memset(&address, 0, sizeof(address));
+        address.sin_len = sizeof(address);
+        address.sin_family = AF_INET;
+        address.sin_addr.s_addr = htonl(INADDR_ANY);
+        address.sin_port = htons(self.serverPort);
+        CFDataRef addressData = CFDataCreate(kCFAllocatorDefault, (const UInt8 *)&address, sizeof(address));
+        
+        if (CFSocketSetAddress(serverSocket, addressData) != kCFSocketSuccess) {
+            [self errorWithName:@"Unable to bind socket to address."];
+            goto exit;
+        }
 
-	[[NSNotificationCenter defaultCenter]
-        addObserver:self
-        selector:@selector(receiveIncomingConnectionNotification:)
-        name:NSFileHandleConnectionAcceptedNotification
-        object:nil];
-	[self.listeningHandle acceptConnectionInBackgroundAndNotify];
-	
-	self.serverState = IHTTPServerStateRunning;
+        self.listeningHandle = [[NSFileHandle alloc] initWithFileDescriptor:fileDescriptor closeOnDealloc:YES];
+
+        [[NSNotificationCenter defaultCenter]
+            addObserver:self
+            selector:@selector(receiveIncomingConnectionNotification:)
+            name:NSFileHandleConnectionAcceptedNotification
+            object:nil];
+        [self.listeningHandle acceptConnectionInBackgroundAndNotify];
+        
+        self.serverState = IHTTPServerStateRunning;
+    }
+    else if (self.loggingLevel >= IHTTPServerLoggingWarnings) {
+        NSLog(@"%@ warning can't startServer in state: %u", NSStringFromClass([self class]), self.serverState);
+    }
 
 exit:
-    CFRelease(addressData);
+    if (addressData) {
+        CFRelease(addressData);
+    }
 }
 
 - (void)stopServer
 {
 	self.serverState = IHTTPServerStateStopping;
+
+    if (self.loggingLevel >= IHTTPServerLoggingDebug) {
+        NSLog(@"%@ stopServer", NSStringFromClass([self class]));
+    }
 
     // stop listening
 	[self.listeningHandle closeFile];
@@ -231,6 +266,10 @@ exit:
         request.delegate = self;
         [self.serverRequests addObject:request];
         [request readHeaders]; // set the handler when the header read is complete
+        
+        if (self.loggingLevel >= IHTTPServerLoggingDebug) {
+            NSLog(@"%@ incoming request at %@", NSStringFromClass([self class]), request.requestTime);
+        }
     }
     
     // wait for the next connection
@@ -243,10 +282,19 @@ exit:
 {
     // NSLog(@"request:%@ parsedHeaders:%@", request, headers);
     IHTTPHandler* prototype = [self prototypeForRequest:request];
-    __block IHTTPHandler* handler = [prototype handlerForRequest:request];
-    __block IHTTPResponse* response = [IHTTPResponse responseWithOutput:request.input];
+    IHTTPHandler* handler = [prototype handlerForRequest:request];
+    IHTTPResponse* response = [IHTTPResponse responseWithOutput:request.input];
+    response.delegate = self;
+
+    if (self.loggingLevel >= IHTTPServerLoggingRequests) {
+        NSLog(@"%@ request: %@", NSStringFromClass([self class]), request);
+    }
+
     [handler handleRequest:request withResponse:response];
-    return;
+    
+    if (self.loggingLevel >= IHTTPServerLoggingResponses) {
+        NSLog(@"%@ response: %@ handler: %@ ", NSStringFromClass([self class]), response, handler);
+    }
 }
 
 #pragma mark - IHTTPResponseDelegate
@@ -258,6 +306,11 @@ exit:
             // NSLog(@"responseDidComplete:%@ sentHeaders:%@", response, response.responseHeaders);
             [request completeRequest];
             [self.serverRequests removeObject:request];
+
+            if (self.loggingLevel >= IHTTPServerLoggingResponses) {
+                NSLog(@"%@ complete: %@", NSStringFromClass([self class]), response);
+            }
+
             return;
         }
     }
