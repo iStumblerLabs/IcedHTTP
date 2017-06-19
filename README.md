@@ -72,12 +72,15 @@ concurrently with low memory overhead:
 ## Changelog
 
 ### 1.0 : IcedHTTP.framework Initial Release
+
 - Create `IcedHTTP.xcodeproject` with `IcedHTTP.framework` targets for `MacOS` and `iOS`
 - Add this `README.md` and `Makefile` for automated builds 
 - Rename classes with `IHTTP` prefix across the board
 - Convert to Modern Objective-C and `ARC`
 - Refactor request and response code into `IHTTPRequest` and `IHTTPResponse`
 - Add `IHTTPHandler` to allow for apps to easily add dynamic responses
+
+### 1.1 : Improved Logging
 
 ## Copyright & Licenses
 
