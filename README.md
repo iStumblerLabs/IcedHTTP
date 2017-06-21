@@ -86,7 +86,7 @@ concurrently with low memory overhead:
 
     The MIT License (MIT)
 
-    Copyright (c) 2015-2016 Alf Watt
+    Copyright (c) 2015-2017 Alf Watt
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -117,9 +117,12 @@ TextTransfer Example App by Matt Gallagher
     this copyright and permission notice. Attribution in compiled projects is
     appreciated but not required.
 
+<div type="hidden">
 <style type="text/css">
 body { font-family: helvetica, helvetica-neue, san-serif; padding: 2em; }
 pre { border: 1px solid lightgray; padding: 1em; }
 code { border-bottom: 1px dashed lightgray; padding: .1em; line-height: 1.75em; }
 a { color: #111; }
+.hidden { visibility: hidden; }
 </style>
+</div>
