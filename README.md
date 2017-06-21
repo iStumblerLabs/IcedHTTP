@@ -117,9 +117,9 @@ TextTransfer Example App by Matt Gallagher
     this copyright and permission notice. Attribution in compiled projects is
     appreciated but not required.
 
-<span style="visibility: hidden !important; color: white !important;"><style type="text/css">
+<style type="text/css" style="visiblity: hidden !important;">
 body { font-family: helvetica, helvetica-neue, san-serif; padding: 2em; }
 pre { border: 1px solid lightgray; padding: 1em; }
 code { border-bottom: 1px dashed lightgray; padding: .1em; line-height: 1.75em; }
 a { color: #111; }
-</style></span>
+</style>
