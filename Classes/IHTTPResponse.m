@@ -57,7 +57,7 @@
     return CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(messageRef));
 }
 
-#pragma mark
+#pragma mark -
 
 - (void)sendStatus:(NSInteger)httpStatus
 {

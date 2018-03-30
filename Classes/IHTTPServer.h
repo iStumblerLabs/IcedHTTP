@@ -51,6 +51,8 @@ extern NSUInteger const IHTTPServerDefaultPort;
 /*! @const IHTTPServerStateChangedNote */
 extern NSString* const IHTTPServerStateChangedNotification;
 
+#pragma mark -
+
 /*! @class IHTTPServer 
     @abstract IcedHTTPServer object */
 @interface IHTTPServer : NSObject <IHTTPRequestDelegate, IHTTPResponseDelegate>

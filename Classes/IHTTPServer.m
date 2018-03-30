@@ -153,8 +153,7 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 {
     CFDataRef addressData = nil;
     
-    if ((self.serverState != IHTTPServerStateStarting) && (self.serverState != IHTTPServerStateRunning))
-    {
+    if ((self.serverState != IHTTPServerStateStarting) && (self.serverState != IHTTPServerStateRunning)) {
         self.serverError = nil;
         self.serverState = IHTTPServerStateStarting;
         self.serverRequests = [NSMutableSet new];
