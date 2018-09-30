@@ -21,9 +21,5 @@ jobs:
           command: make build-macos
 
       - run:
-          name: Make ihttpd for macOS
-          command: make build-httpd
-
-      - run:
           name: Make Headerdoc
           command: make headerdoc
