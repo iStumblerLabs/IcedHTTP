@@ -19,7 +19,3 @@ jobs:
       - run:
           name: Make IcedHTTP.framework for macOS
           command: make build-macos
-
-      - run:
-          name: Make Headerdoc
-          command: make headerdoc
