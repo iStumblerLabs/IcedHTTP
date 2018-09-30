@@ -1,0 +1,21 @@
+# iOS CircleCI 2.0 configuration file
+#
+
+version: 2
+jobs:
+  build:
+
+    # Specify the Xcode version to use
+    macos:
+      xcode: "10.0.0"
+
+    steps:
+      - checkout
+
+      - run:
+          name: Make IcedHTTP.framework
+          command: make build
+
+      - run:
+          name: Make Headerdoc
+          command: make headerdoc

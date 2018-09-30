@@ -54,6 +54,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7552D94F21619244004FF8C8 /* config.yml */ = {isa = PBXFileReference; lastKnownFileType = text; name = config.yml; path = .circleci/config.yml; sourceTree = "<group>"; };
 		756F24571CDC086000DBD692 /* IHTTPRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IHTTPRequest.h; sourceTree = "<group>"; };
 		756F24581CDC086000DBD692 /* IHTTPRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IHTTPRequest.m; sourceTree = "<group>"; };
 		756F245C1CDF0C1500DBD692 /* ihttpd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ihttpd.m; sourceTree = "<group>"; };
@@ -101,6 +102,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7552D94E21619224004FF8C8 /* Packaging */ = {
+			isa = PBXGroup;
+			children = (
+				7552D94F21619244004FF8C8 /* config.yml */,
+			);
+			name = Packaging;
+			sourceTree = "<group>";
+		};
 		756F244E1CDBFE2F00DBD692 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -116,8 +125,9 @@
 				758BBB261CDBC8DE0073A7B9 /* README.md */,
 				758BBB0E1CDBC87C0073A7B9 /* IcedHTTP */,
 				758BBB171CDBC8BD0073A7B9 /* Classes */,
-				758BBB0D1CDBC87C0073A7B9 /* Products */,
 				756F244E1CDBFE2F00DBD692 /* Frameworks */,
+				758BBB0D1CDBC87C0073A7B9 /* Products */,
+				7552D94E21619224004FF8C8 /* Packaging */,
 			);
 			sourceTree = "<group>";
 		};
