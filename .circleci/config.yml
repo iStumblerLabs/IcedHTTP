@@ -13,8 +13,16 @@ jobs:
       - checkout
 
       - run:
-          name: Make IcedHTTP.framework
-          command: make build
+          name: Make IcedHTTP.framework for iOS
+          command: make build-ios
+
+      - run:
+          name: Make IcedHTTP.framework for macOS
+          command: make build-macos
+
+      - run:
+          name: Make ihttpd for macOS
+          command: make build-httpd
 
       - run:
           name: Make Headerdoc

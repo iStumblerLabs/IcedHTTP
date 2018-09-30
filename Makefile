@@ -2,17 +2,31 @@
 BUILD_DIR := build
 XCODE_PROJECT := IcedHTTP.xcodeproj
 XCODE_TARGET := IcedHTTP
+XCODE_IOS_SCHEME := $(XCODE_TARGET)-iOS
+XCODE_MACOS_SCHEME := $(XCODE_TARGET)-macOS
+XCODE_IHTTPD_SCHEME := ihttpd
 XCODE_CONFIGURATION := Deployment
 
 DOCS_DIR := docs
 
-.PHONY: build
-build:
-	xcodebuild -project $(XCODE_PROJECT) -target $(XCODE_TARGET) -configuration $(XCODE_CONFIGURATION)
+.PHONY: build-ios
+build-ios:
+	xcodebuild -project $(XCODE_PROJECT) -scheme $(XCODE_IOS_SCHEME) -configuration $(XCODE_CONFIGURATION)
 
-.PHONY: build-clean
-build-clean:
-	rm -r $(BUILD_DIR)
+.PHONY: build-macos
+build-macos:
+	xcodebuild -project $(XCODE_PROJECT) -scheme $(XCODE_MACOS_SCHEME) -configuration $(XCODE_CONFIGURATION)
+
+.PHONY: build-ihttpd
+build-ihttpd:
+	xcodebuild -project $(XCODE_PROJECT) -scheme $(XCODE_IHTTPD_SCHEME) -configuration $(XCODE_CONFIGURATION)
+
+.PHONY: build
+build: build-ios build-macos
+
+.PHONY: clean-build
+clean-build:
+	if [ -d $(BUILD_DIR) ]; then rm -r $(BUILD_DIR); fi
 
 .PHONY: headerdoc
 headerdoc:
@@ -21,9 +35,12 @@ headerdoc:
 	markdown README.md > $(DOCS_DIR)/index.html
 	open $(DOCS_DIR)/index.html
 
-.PHONY: headerdoc-clean
-headerdoc-clean:
-	rm -r $(DOCS_DIR)
+.PHONY: clean-headerdoc
+clean-headerdoc:
+	if [ -d $(DOCS_DIR) ]; then rm -r $(DOCS_DIR); fi
 
 .PHONY: clean
-clean: build-clean headerdoc-clean
+clean: clean-build clean-headerdoc
+
+.PHONY: all
+all: clean build headerdoc
