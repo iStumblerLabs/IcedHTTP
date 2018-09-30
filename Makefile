@@ -32,8 +32,7 @@ clean-build:
 headerdoc:
 	find . -type f -name '*.h' | xargs headerdoc2html -o $(DOCS_DIR)
 	gatherheaderdoc $(DOCS_DIR)
-	markdown README.md > $(DOCS_DIR)/index.html
-	open $(DOCS_DIR)/index.html
+	if [ -x `which markdown` ]; then markdown README.md > $(DOCS_DIR)/index.html && open $(DOCS_DIR)/index.html; fi
 
 .PHONY: clean-headerdoc
 clean-headerdoc:
