@@ -35,7 +35,7 @@ typedef NSUInteger (^ IHTTPResponseBlock)(IHTTPRequest* request, IHTTPResponse* 
 
 /*!
     @method canHandleRequest:
-    @param request
+    @param request the request to consider
     @return BOOL YES if the handler can handle the request provided
     @discussion called by the server on each prototype handler until one answers YES
 */
@@ -43,18 +43,18 @@ typedef NSUInteger (^ IHTTPResponseBlock)(IHTTPRequest* request, IHTTPResponse* 
 
 /*!
     @method handlerForRequest:
-    @param request
+    @param request the request to find a handler for
     @returns a copy of the current handler
 */
 - (IHTTPHandler*) handlerForRequest:(IHTTPRequest*) request;
 
 /*!
     @method handleRequest:withResponse
-    @param request
-    @param response
+    @param request the request to handle
+    @param response the response object
 */
 - (NSUInteger) handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response;
 
 @end
 
-// Copyright © 2016 Alf Watt. Available under MIT License (MIT) in README.md
+// Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md

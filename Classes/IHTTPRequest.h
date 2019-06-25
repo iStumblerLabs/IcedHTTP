@@ -3,46 +3,46 @@
 @protocol IHTTPRequestDelegate;
 
 /*! @header IHTTPRequest.h
-    @abstract IHTTPRequest class */
+    @brief IHTTPRequest class */
 
 /*! @class IHTTPRequest
-    @abstract IHTTPRequest parses the server's input */
+    @brief IHTTPRequest parses the server's input */
 @interface IHTTPRequest : NSObject
 
-/*! @abstract the NSFilehandle with the HTTP Request headers and body */
+/*! @brief the NSFilehandle with the HTTP Request headers and body */
 @property(nonatomic, retain) NSFileHandle* input;
 
 @property(nonatomic, assign) id<IHTTPRequestDelegate> delegate;
 
-/*! @abstract YES if the headers have been read */
+/*! @brief YES if the headers have been read */
 @property(nonatomic, assign) BOOL didReadHeaders;
 
-/*! @abstract HTTP Request Method */
+/*! @brief HTTP Request Method */
 @property(nonatomic, readonly) NSString* requestMethod;
 
-/*! @abstract HTTP Request Headers in dictionary form */
+/*! @brief HTTP Request Headers in dictionary form */
 @property(nonatomic, readonly) NSDictionary* requestHeaders;
 
-/*! @abstract HTTP Request URL */
+/*! @brief HTTP Request URL */
 @property(nonatomic, readonly) NSURL* requestURL;
 
-/*! @abstract HTTP Reqeust Time */
+/*! @brief HTTP Reqeust Time */
 @property(nonatomic, readonly) NSDate* requestTime;
 
 #pragma mark -
 
-/*! @abstract create a request object ewith the file handle provided */
+/*! @brief create a request object ewith the file handle provided */
 + (IHTTPRequest*) requestWithInput:(NSFileHandle*) input;
 
 #pragma mark -
 
-/*! @abstract read the headers of the request */
+/*! @brief read the headers of the request */
 - (void) readHeaders;
 
-/*! @abstract NSData with the body of the IHTTPRequest */
+/*! @brief NSData with the body of the IHTTPRequest */
 - (NSData*) readBody;
 
-/*! @abstract close the input stream */
+/*! @brief close the input stream */
 - (void) completeRequest;
 
 @end
@@ -55,4 +55,4 @@
 
 @end
 
-//  Copyright © 2016 Alf Watt. Available under MIT License (MIT) in README.md
+//  Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md

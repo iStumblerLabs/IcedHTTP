@@ -1,42 +1,39 @@
-//
-//  HTTPServer.m
-//  TextTransfer
-//
-//  Created by Matt Gallagher on 2009/07/13.
-//  Copyright 2009 Matt Gallagher. All rights reserved.
-//
-//  Permission is given to use this source code file, free of charge, in any
-//  project, commercial or otherwise, entirely at your risk, with the condition
-//  that any redistribution (in part or whole) of source code must retain
-//  this copyright and permission notice. Attribution in compiled projects is
-//  appreciated but not required.
-//
-//  Portions Copyright © 2016 Alf Watt. Available under MIT License (MIT) in README.md
-//
-
 #import "IHTTPServer.h"
-#import <sys/socket.h>
-#import <netinet/in.h>
 
+#import "IHTTPConstants.h"
+#import "IHTTPHandler.h"
 #import "IHTTPRequest.h"
 #import "IHTTPResponse.h"
-#import "IHTTPHandler.h"
+
+#import <sys/socket.h>
+#import <netinet/in.h>
+#import <Network/Network.h>
+
 
 @class IHTTPServerTask;
 
-NSUInteger const IHTTPServerDefaultPort = 8080;
 NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChangedNotification";
 
 #pragma mark -
 
-@implementation IHTTPServer
-{
-	CFSocketRef serverSocket;
-    IHTTPServerState serverState;
-    NSError* serverError;
-}
+@interface IHTTPServer () <IHTTPRequestDelegate, IHTTPResponseDelegate>
+@property(nonatomic, assign) IHHTPServerState serverStateStorage;
+@property(nonatomic, assign) nw_endpoint_t networkListener;
+@property(nonatomic, retain) NSMutableArray* handlerPrototypesStorage;
+@property(nonatomic, retain) NSMutableSet* serverRequestsStorage;
+@property(nonatomic, retain) NSError* serverErrorStorage;
+
+- (void)setServerError:(NSError*) anError;
+
+// TODO remove
+@property(nonatomic, retain) NSFileHandle* listeningHandle;
+@property(nonatomic, assign) CFSocketRef serverSocket;
+
+@end
 
 #pragma mark -
+
+@implementation IHTTPServer
 
 + (IHTTPServer *)sharedIHTTPServer
 {
@@ -50,14 +47,21 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	return sharedIHTTPServer;
 }
 
++ (IHTTPServer*) serverOnPort:(NSUInteger)serverPort
+{
+    IHTTPServer* server = IHTTPServer.new;
+    server.serverPort = serverPort;
+    return server;  
+}
+
 #pragma mark -
 
 - (id)init
 {
 	self = [super init];
 	if (self != nil) {
-        self.serverPort = IHTTPServerDefaultPort;
-		self.serverState = IHTTPServerStateIdle;
+        self.serverPort = IHTTPDefaultPort;
+		self.serverStateStorage = IHTTPServerStateIdle;
         self.loggingLevel = IHTTPServerLoggingErrors;
         [self resetPrototypes];
 	}
@@ -66,42 +70,45 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 
 #pragma mark - Properties
 
-- (IHTTPServerState) serverState
+- (NSArray*) handlerPrototypes
 {
-    return serverState;
+    return [NSArray arrayWithArray:self.handlerPrototypesStorage];
 }
 
-- (void)setServerState:(IHTTPServerState)newState
+- (IHHTPServerState) serverState
 {
-	if (serverState == newState) {
+    return self.serverStateStorage;
+}
+
+- (void)setServerState:(IHHTPServerState)newState
+{
+	if (self.serverStateStorage == newState) {
 		return;
 	}
 
-	serverState = newState;
+	self.serverStateStorage = newState;
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:IHTTPServerStateChangedNotification object:self];
+	[NSNotificationCenter.defaultCenter postNotificationName:IHTTPServerStateChangedNotification object:self];
 }
 
 - (NSError*)serverError
 {
-    return serverError;
+    return self.serverErrorStorage;
 }
 
 - (void)setServerError:(NSError*) anError
 {
-	serverError = anError;
+	self.serverErrorStorage = anError;
 	
-	if (serverError == nil) {
-		return;
+	if (self.serverErrorStorage) {
+        [self stopServer];
+        
+        self.serverState = IHTTPServerStateIdle;
+        
+        if (self.loggingLevel >= IHTTPServerLoggingErrors) {
+            NSLog(@"%@ error: %@", NSStringFromClass([self class]), self.serverErrorStorage);
+        }
 	}
-	
-	[self stopServer];
-	
-	self.serverState = IHTTPServerStateIdle;
-    
-    if (self.loggingLevel >= IHTTPServerLoggingErrors) {
-        NSLog(@"%@ error: %@", NSStringFromClass([self class]), serverError);
-    }
 }
 
 - (NSURL*) rootURL
@@ -112,9 +119,9 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 
 #pragma mark - Prototype Registory
 
-- (void)registerPrototype:(IHTTPHandler *)prototype
+- (void)registerHandler:(IHTTPHandler *)prototype
 {
-	[self.handlerPrototypes addObject:prototype];
+	[self.handlerPrototypesStorage insertObject:prototype atIndex:0];
 
     if (self.loggingLevel >= IHTTPServerLoggingDebug) {
         NSLog(@"%@ registerPrototype: %@", NSStringFromClass([self class]), prototype);
@@ -133,9 +140,9 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 
 - (void)resetPrototypes
 {
-    self.handlerPrototypes = [NSMutableArray new];
+    self.handlerPrototypesStorage = [NSMutableArray new];
     
-    [self registerPrototype:[IHTTPHandler handlerWithResponseBlock:^NSUInteger(IHTTPRequest *request, IHTTPResponse *response) {
+    [self registerHandler:[IHTTPHandler handlerWithResponseBlock:^NSUInteger(IHTTPRequest *request, IHTTPResponse *response) {
         NSUInteger error = 404;
         [response sendStatus:404];
         [response completeResponse];
@@ -154,22 +161,22 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
     CFDataRef addressData = nil;
     
     if ((self.serverState != IHTTPServerStateStarting) && (self.serverState != IHTTPServerStateRunning)) {
-        self.serverError = nil;
-        self.serverState = IHTTPServerStateStarting;
-        self.serverRequests = [NSMutableSet new];
+        self.serverErrorStorage = nil;
+        self.serverStateStorage = IHTTPServerStateStarting;
+        self.serverRequestsStorage = [NSMutableSet new];
         
         if (self.loggingLevel >= IHTTPServerLoggingDebug) {
             NSLog(@"%@ startServer", NSStringFromClass([self class]));
         }
         
-        serverSocket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL);
-        if (!serverSocket) {
+        self.serverSocket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL);
+        if (!self.serverSocket) {
             [self errorWithName:@"Unable to create socket."];
             return;
         }
 
         int reuse = true;
-        int fileDescriptor = CFSocketGetNative(serverSocket);
+        int fileDescriptor = CFSocketGetNative(self.serverSocket);
         if (setsockopt(fileDescriptor, SOL_SOCKET, SO_REUSEADDR,
             (void *)&reuse, sizeof(int)) != 0) {
             [self errorWithName:@"Unable to set socket options."];
@@ -184,14 +191,14 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
         address.sin_port = htons(self.serverPort);
         CFDataRef addressData = CFDataCreate(kCFAllocatorDefault, (const UInt8 *)&address, sizeof(address));
         
-        if (CFSocketSetAddress(serverSocket, addressData) != kCFSocketSuccess) {
+        if (CFSocketSetAddress(self.serverSocket, addressData) != kCFSocketSuccess) {
             [self errorWithName:@"Unable to bind socket to address."];
             goto exit;
         }
 
-        self.listeningHandle = [[NSFileHandle alloc] initWithFileDescriptor:fileDescriptor closeOnDealloc:YES];
+        self.listeningHandle = [NSFileHandle.alloc initWithFileDescriptor:fileDescriptor closeOnDealloc:YES];
 
-        [[NSNotificationCenter defaultCenter]
+        [NSNotificationCenter.defaultCenter
             addObserver:self
             selector:@selector(receiveIncomingConnectionNotification:)
             name:NSFileHandleConnectionAcceptedNotification
@@ -201,7 +208,7 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
         self.serverState = IHTTPServerStateRunning;
     }
     else if (self.loggingLevel >= IHTTPServerLoggingWarnings) {
-        NSLog(@"%@ warning can't startServer in state: %u", NSStringFromClass([self class]), self.serverState);
+        NSLog(@"%@ warning can't startServer in state: %lu", NSStringFromClass([self class]), (unsigned long)self.serverState);
     }
 
 exit:
@@ -222,7 +229,7 @@ exit:
 	[self.listeningHandle closeFile];
 	self.listeningHandle = nil;
 
-	[[NSNotificationCenter defaultCenter]
+	[NSNotificationCenter.defaultCenter
 		removeObserver:self
 		name:NSFileHandleConnectionAcceptedNotification
 		object:nil];
@@ -231,14 +238,14 @@ exit:
     for (IHTTPRequest* request in self.serverRequests) {
         [request.input closeFile];
     }
-    [self.serverRequests removeAllObjects];
-    self.serverRequests = nil;
+    [self.serverRequestsStorage removeAllObjects];
+    self.serverRequestsStorage = nil;
 
 
-	if (serverSocket) {
-		CFSocketInvalidate(serverSocket);
-		CFRelease(serverSocket);
-		serverSocket = nil;
+	if (self.serverSocket) {
+		CFSocketInvalidate(self.serverSocket);
+		// CFRelease(self.serverSocket);
+		self.serverSocket = nil;
 	}
 
 	self.serverState = IHTTPServerStateIdle;
@@ -260,10 +267,10 @@ exit:
 	NSDictionary* userInfo = [notification userInfo];
 	NSFileHandle* requestHandle = [userInfo objectForKey:NSFileHandleNotificationFileHandleItem];
 
-    if(requestHandle) {
+    if (requestHandle) {
         IHTTPRequest* request = [IHTTPRequest requestWithInput:requestHandle];
         request.delegate = self;
-        [self.serverRequests addObject:request];
+        [self.serverRequestsStorage addObject:request];
         [request readHeaders]; // set the handler when the header read is complete
         
         if (self.loggingLevel >= IHTTPServerLoggingDebug) {
@@ -304,7 +311,7 @@ exit:
         if (response.output == request.input) {
             // NSLog(@"responseDidComplete:%@ sentHeaders:%@", response, response.responseHeaders);
             [request completeRequest];
-            [self.serverRequests removeObject:request];
+            [self.serverRequestsStorage removeObject:request];
 
             if (self.loggingLevel >= IHTTPServerLoggingResponses) {
                 NSLog(@"%@ complete: %@", NSStringFromClass([self class]), response);
@@ -316,3 +323,19 @@ exit:
 }
 
 @end
+
+//
+//  HTTPServer.m
+//  TextTransfer
+//
+//  Created by Matt Gallagher on 2009/07/13.
+//  Copyright 2009 Matt Gallagher. All rights reserved.
+//
+//  Permission is given to use this source code file, free of charge, in any
+//  project, commercial or otherwise, entirely at your risk, with the condition
+//  that any redistribution (in part or whole) of source code must retain
+//  this copyright and permission notice. Attribution in compiled projects is
+//  appreciated but not required.
+//
+//  Portions Copyright © 2016 Alf Watt. Available under MIT License (MIT) in README.md
+//

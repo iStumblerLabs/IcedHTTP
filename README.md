@@ -19,19 +19,25 @@ by [Matt Gallagher](http://www.cocoawithlove.com)
     int main(int argc, char** argv)
     {
         @autoreleasepool {
-            IHTTPServer* server = [IHTTPServer sharedIHTTPServer]; // TODO default to 8080 or use -p argument to set the port
-            [server registerPrototype:[IHTTPHandler handlerWithResponseBlock: ^(IHTTPRequest* request, IHTTPResponse* response) {
-                [response sendStatus:200];
-                [response sendBody:[@"Hello Client" dataUsingEncoding:NSUTF8StringEncoding]]; // TODO one for each -s argument
-                [response completeResponse];
-                return (NSUInteger)200;
-            }]];
+            NSUInteger serverPort = 8080;
+            IHTTPServer* server = [IHTTPServer serverOnPort:serverPort];
+            [server registerHandler:[IHTTPHandler
+                handlerWithRequestBlock:^(IHTTPRequest* request){ return YES; } // handle all requests
+                responseBlock: ^(IHTTPRequest* request, IHTTPResponse* response) {
+                    NSUInteger responseCode = 200;
+                    NSString* messageString = [NSString stringWithFormat:@"Hello IcedHttp @ %@", [NSDate date]];
+                    [response sendStatus:responseCode];
+                    [response sendBody:[messageString dataUsingEncoding:NSUTF8StringEncoding]]; // TODO one for each -s argument
+                    [response completeResponse];
+                    return responseCode;
+                }
+            ]];
             
             [server startServer];
             
-            NSLog(@"server running http://localhost:8080"); // TODO server.URL
+            NSLog(@"IcedHTTP server running %@", server.rootURL);
             
-            [[NSRunLoop currentRunLoop] run]; // TODO runUntilDate checking on the server.status?
+            [NSRunLoop.currentRunLoop run];
             
             [server stopServer];
         }

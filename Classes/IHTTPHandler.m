@@ -1,9 +1,8 @@
-
 #import "IHTTPHandler.h"
 
-#import "IHTTPServer.h"
 #import "IHTTPRequest.h"
 #import "IHTTPResponse.h"
+#import "IHTTPServer.h"
 
 #pragma mark -
 
@@ -80,6 +79,21 @@
 
 @implementation IHTTPFileHandler
 
++ (NSUInteger) copyFile:(NSString*)filePath toStream:(NSFileHandle*)outStream
+{
+    NSUInteger chunk = 4096;
+    NSUInteger bytes = 0;
+    NSMutableData *buffer = [NSMutableData dataWithLength:chunk];
+    NSInputStream* inputStream = [NSInputStream inputStreamWithFileAtPath:filePath];
+    while ([inputStream hasBytesAvailable]) {
+        NSUInteger read = [inputStream read:buffer.mutableBytes maxLength:chunk];
+        [outStream writeData:((read < chunk) ? [buffer subdataWithRange:NSMakeRange(0, read)] : buffer)];
+        bytes += read;
+    }
+
+    return bytes;
+}
+
 - (BOOL)canHandleRequest:(IHTTPRequest*)aRequest
 {
     NSFileManager* fm = [NSFileManager defaultManager];
@@ -94,19 +108,36 @@
 - (NSUInteger)handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response
 {
     NSUInteger responseCode = 400;
-    NSFileManager* fm = [NSFileManager defaultManager];
     BOOL isDirectory = NO;
-	if ([fm fileExistsAtPath:self.filePath isDirectory:&isDirectory] && !isDirectory) {
-        // NSInputStream* inputStream = [NSInputStream inputStreamWithFileAtPath:self.filePath];
-        //while ([inputStream hasBytesAvailable]) {
-        //    [response.output writeData:inputStream.];
-        //}
+	if ([NSFileManager.defaultManager fileExistsAtPath:self.filePath isDirectory:&isDirectory] && !isDirectory) {
+        [response sendStatus:200];
+        [IHTTPFileHandler copyFile:self.filePath toStream:response.output];
+        goto complete;
 	}
+    else if (isDirectory) {
+        for (NSString* defaultPage in @[@"index.html", @"default.html"]) {
+            if ([NSFileManager.defaultManager fileExistsAtPath:[self.filePath stringByAppendingPathComponent:defaultPage] isDirectory:&isDirectory] && !isDirectory) {
+                [response sendStatus:200];
+                [IHTTPFileHandler copyFile:[self.filePath stringByAppendingPathComponent:defaultPage] toStream:response.output];
+                goto complete;
+            }
+        }
+        // TODO check the request headers and send a ToC
+        // - get a list of the files
+        // - check for `index.html` & c.
+        // - decide on an output format
+        // - render to the response.output
+        [response sendStatus:501]; // not implemented
+        goto complete;
+    }
     else {
         [response sendStatus:404]; // not found
-        [response completeResponse];
+        goto complete;
     }
     
+complete:
+    [response completeResponse];
+
     return responseCode;
 }
 
@@ -151,4 +182,4 @@
 
 @end
 
-//  Copyright © 2016 Alf Watt. Available under MIT License (MIT) in README.md
+//  Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md
