@@ -4,6 +4,7 @@ XCODE_PROJECT := IcedHTTP.xcodeproj
 XCODE_TARGET := IcedHTTP
 XCODE_IOS_SCHEME := $(XCODE_TARGET)-iOS
 XCODE_MACOS_SCHEME := $(XCODE_TARGET)-macOS
+XCODE_TVOS_SCHEME := $(XCODE_TARGET)-tvOS
 XCODE_IHTTPD_SCHEME := ihttpd
 XCODE_CONFIGURATION := Deployment
 
@@ -17,12 +18,16 @@ build-ios:
 build-macos:
 	xcodebuild -project $(XCODE_PROJECT) -scheme $(XCODE_MACOS_SCHEME) -configuration $(XCODE_CONFIGURATION)
 
-.PHONY: build-ihttpd
-build-ihttpd:
+.PHONY: build-tvos
+build-tvos
+    xcodebuild -project $(XCODE_PROJECT) -scheme $(XCODE_TVOS_SCHEME) -configuration $(XCODE_CONFIGURATION)
+
+.PHONY: ihttpd
+ihttpd:
 	xcodebuild -project $(XCODE_PROJECT) -scheme $(XCODE_IHTTPD_SCHEME) -configuration $(XCODE_CONFIGURATION)
 
 .PHONY: build
-build: build-ios build-macos
+build: build-ios build-macos ihttpd
 
 .PHONY: clean-build
 clean-build:
@@ -32,7 +37,7 @@ clean-build:
 headerdoc:
 	find . -type f -name '*.h' | xargs headerdoc2html -o $(DOCS_DIR)
 	gatherheaderdoc $(DOCS_DIR)
-	if [ -x `which markdown` ]; then markdown README.md > $(DOCS_DIR)/index.html && open $(DOCS_DIR)/index.html; fi
+	if [ ! -n `which markdown` ]; then markdown README.md > $(DOCS_DIR)/index.html && open $(DOCS_DIR)/index.html; fi
 
 .PHONY: clean-headerdoc
 clean-headerdoc:

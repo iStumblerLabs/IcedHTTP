@@ -143,10 +143,10 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
     self.handlerPrototypesStorage = [NSMutableArray new];
     
     [self registerHandler:[IHTTPHandler handlerWithResponseBlock:^NSUInteger(IHTTPRequest *request, IHTTPResponse *response) {
-        NSUInteger error = 404;
-        [response sendStatus:404];
+        NSUInteger errorStatus = IHTTPStatus501NotImplemented;
+        [response sendStatus:errorStatus];
         [response completeResponse];
-        return error;
+        return errorStatus;
     }]];
     
     if (self.loggingLevel >= IHTTPServerLoggingDebug) {

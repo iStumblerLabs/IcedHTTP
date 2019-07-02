@@ -2,8 +2,8 @@
 #define IHTTPConstants_h
 
 /*! @brief HTTP/1.1 header fields
-    @link https://tools.ietf.org/html/rfc7231
-    @link https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+    https://tools.ietf.org/html/rfc7231
+    https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 */
 typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     IHTTPStatusCodeUnknown                      = 0,
@@ -12,10 +12,10 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     IHTTPStatus100Continue                      = 100,
     IHTTPStatus101SwitchingProtocols            = 101,
     
-    /*! @link https://tools.ietf.org/html/rfc2518 */
+    /*! @brief https://tools.ietf.org/html/rfc2518 */
     IHTTPStatus102Processing                    = 102,
     
-    /*! @link http://www.iana.org/go/rfc8297 */
+    /*! @brief http://www.iana.org/go/rfc8297 */
     IHTTPStatus103EarlyHints                    = 103,
     
     // 2xx - Success
@@ -26,16 +26,16 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     IHTTPStatus204NoContent                     = 204,
     IHTTPStatus205ResetContent                  = 205,
     
-    /*! @link https://tools.ietf.org/html/rfc7233 */
+    /*! @brief https://tools.ietf.org/html/rfc7233 */
     IHTTPStatus206PartialContent                = 206,
     
-    /*! @link https://tools.ietf.org/html/rfc4918 */
+    /*! @brief https://tools.ietf.org/html/rfc4918 */
     IHTTPStatus207MultiStatus                   = 207,
     
-    /*! @link https://tools.ietf.org/html/rfc5842 */
+    /*! @brief https://tools.ietf.org/html/rfc5842 */
     IHTTPStatus208AlreadyReported               = 208,
     
-    /*! @link https://tools.ietf.org/html/rfc3229 */
+    /*! @brief https://tools.ietf.org/html/rfc3229 */
     IHTTPStatus226IMUsed                        = 226,
 
     // 3xx - Redirection
@@ -43,13 +43,13 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     IHTTPStatus301MovedPermanently              = 301,
     IHTTPStatus303SeeOther                      = 303,
     
-    /*! @link https://tools.ietf.org/html/rfc7232 */
+    /*! @brief https://tools.ietf.org/html/rfc7232 */
     IHTTPStatus304NotModified                   = 304,
     IHTTPStatus305UseProxy                      = 305,
     IHTTPStatus306SwitchProxy                   = 306,
     IHTTPStatus307TemporaryRedirect             = 307,
     
-    /*! @link https://tools.ietf.org/html/rfc7538 */
+    /*! @brief https://tools.ietf.org/html/rfc7538 */
     IHTTPStatus308PermanentRedirect             = 308,
 
     // 4xx Client errors
@@ -61,7 +61,7 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     IHTTPStatus405MethodNotAllowed              = 405,
     IHTTPStatus406NotAcceptable                 = 406,
     
-    /*! @link https://tools.ietf.org/html/rfc7235 */
+    /*! @brief https://tools.ietf.org/html/rfc7235 */
     IHTTPStatus407ProxyAuthenticationRequired   = 407,
     
     IHTTPStatus408RequestTimeout                = 408,
@@ -69,43 +69,43 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     IHTTPStatus410Gone                          = 410,
     IHTTPStatus411LengthRequired                = 411,
 
-    /*! @link https://tools.ietf.org/html/rfc7232 */
+    /*! @brief https://tools.ietf.org/html/rfc7232 */
     IHTTPStatus412PreconditionFailed            = 412,
 
-    /*! @link https://tools.ietf.org/html/rfc7231 */
+    /*! @brief https://tools.ietf.org/html/rfc7231 */
     IHTTPStatus413PayloadTooLarge               = 413,
     IHTTPStatus414URITooLong                    = 414,
     IHTTPStatus415UnsupportedMediaType          = 415,
 
-    /*! @link https://tools.ietf.org/html/rfc7233 */
+    /*! @brief https://tools.ietf.org/html/rfc7233 */
     IHTTPStatus416RangeNotSatisfiable           = 416,
     
     IHTTPStatus417ExpectationFailed             = 417,
     
-    /*! @link https://tools.ietf.org/html/rfc2324 */
-    /*! @link https://tools.ietf.org/html/rfc7168 */
+    /*! @brief https://tools.ietf.org/html/rfc2324
+        https://tools.ietf.org/html/rfc7168 */
     IHTTPStatus418ImATeapot                     = 418,
     
-    /*! https://tools.ietf.org/html/rfc7540 */
+    /*! @brief https://tools.ietf.org/html/rfc7540 */
     IHTTPStatus421MisdirectedRequest            = 421,
     
-    /*! @link https://tools.ietf.org/html/rfc4918 - WebDAV */
+    /*! @brief https://tools.ietf.org/html/rfc4918 - WebDAV */
     IHTTPStatus422UnprocessableEntity           = 422,
     IHTTPStatus423Locked                        = 423,
     IHTTPStatus424FailedDependency              = 424,
     
-    /*! @link https://tools.ietf.org/html/rfc8470 */
+    /*! @brief https://tools.ietf.org/html/rfc8470 */
     IHTTPStatus425TooEarly                      = 425,
     
     IHTTPStatus426UpgradeRequired               = 426,
     
-    /*! @link https://tools.ietf.org/html/rfc6585 */
+    /*! @brief https://tools.ietf.org/html/rfc6585 */
     IHTTPStatus428PreconditionRequired          = 428,
     IHTTPStatus429TooManyRequests               = 429,
     
     IHTTPStatus431RequestHeaderFieldsTooLarge   = 431,
     
-    /*! @link https://tools.ietf.org/html/rfc7725 */
+    /*! @brief https://tools.ietf.org/html/rfc7725 */
     IHTTPStatus451UnavailableForLegalReasons    = 451,
 
     // 5xx Server errors
@@ -116,19 +116,19 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     IHTTPStatus504GatewayTimeout                = 504,
     IHTTPStatus505HTTPVersionNotSupported       = 505,
 
-    /*! @link https://tools.ietf.org/html/rfc2295 */
+    /*! @brief https://tools.ietf.org/html/rfc2295 */
     IHTTPStatus506VariantAlsoNegotiates         = 506,
     
-    /*! @link https://tools.ietf.org/html/rfc4918 */
+    /*! @brief https://tools.ietf.org/html/rfc4918 */
     IHTTPStatus507InsufficientStorage           = 507,
     
-    /*! @link https://tools.ietf.org/html/rfc5842 */
+    /*! @brief https://tools.ietf.org/html/rfc5842 */
     IHTTPStatus508LoopDetected                  = 508,
     
-    /*! @link https://tools.ietf.org/html/rfc2774 */
+    /*! @brief https://tools.ietf.org/html/rfc2774 */
     IHTTPStatus510NotExtended                   = 510,
     
-    /*! @link https://tools.ietf.org/html/rfc6585 */
+    /*! @brief https://tools.ietf.org/html/rfc6585 */
     IHTTPStatus511NetworkAuthenticationRequired = 511
 };
 

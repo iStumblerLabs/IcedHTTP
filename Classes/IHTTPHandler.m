@@ -1,5 +1,6 @@
 #import "IHTTPHandler.h"
 
+#import "IHTTPConstants.h"
 #import "IHTTPRequest.h"
 #import "IHTTPResponse.h"
 #import "IHTTPServer.h"
@@ -59,9 +60,9 @@
 
 - (NSUInteger)handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response
 {
-    [response sendStatus:400];
+    [response sendStatus:IHTTPStatus501NotImplemented];
     [response completeResponse];
-    return 400;
+    return IHTTPStatus501NotImplemented;
 }
 
 #pragma mark - NSCopying
@@ -107,31 +108,30 @@
 
 - (NSUInteger)handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response
 {
-    NSUInteger responseCode = 400;
+    NSUInteger responseCode = IHTTPStatus500InternalServerError;
     BOOL isDirectory = NO;
 	if ([NSFileManager.defaultManager fileExistsAtPath:self.filePath isDirectory:&isDirectory] && !isDirectory) {
-        [response sendStatus:200];
+        [response sendStatus:IHTTPStatus200OK];
         [IHTTPFileHandler copyFile:self.filePath toStream:response.output];
         goto complete;
 	}
     else if (isDirectory) {
         for (NSString* defaultPage in @[@"index.html", @"default.html"]) {
             if ([NSFileManager.defaultManager fileExistsAtPath:[self.filePath stringByAppendingPathComponent:defaultPage] isDirectory:&isDirectory] && !isDirectory) {
-                [response sendStatus:200];
+                [response sendStatus:IHTTPStatus200OK];
                 [IHTTPFileHandler copyFile:[self.filePath stringByAppendingPathComponent:defaultPage] toStream:response.output];
                 goto complete;
             }
         }
         // TODO check the request headers and send a ToC
         // - get a list of the files
-        // - check for `index.html` & c.
         // - decide on an output format
         // - render to the response.output
-        [response sendStatus:501]; // not implemented
+        [response sendStatus:IHTTPStatus501NotImplemented]; // not implemented
         goto complete;
     }
     else {
-        [response sendStatus:404]; // not found
+        [response sendStatus:IHTTPStatus404NotFound]; // not found
         goto complete;
     }
     
