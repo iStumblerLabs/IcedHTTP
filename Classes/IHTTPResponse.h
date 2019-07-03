@@ -5,21 +5,25 @@
 @protocol IHTTPResponseDelegate;
 
 /*! @header IHTTPResponse.h
-    @abstract IHTTPResponse Class */
+    @abstract IHTTPResponse Class
+*/
 
 /*! @class IHTTPResponse 
-    @abstract IHTTPResponse Class */
+    @brief IcedHTTP Response Object
+    @discussion contains the output stream, provides for sending headers and body content,
+    as well as monitoring the completion of the response via a delegate method
+*/
 @interface IHTTPResponse : NSObject
 
 @property(nonatomic, weak) id<IHTTPResponseDelegate> delegate;
 
-/*! @abstract output the NSFileHandle the response will write it's output to */
+/*! @abstract the NSFileHandle the response will write it's output to */
 @property(nonatomic, retain) NSFileHandle* output;
 
-/*! @abstract didSendHeaders YES if sendHeaders: has been called, sucessfully or not */
+/*! @abstract YES if sendHeaders: has been called, sucessfully or not */
 @property(nonatomic, assign) BOOL didSendHeaders;
 
-/*! @abstract outputException the NSException which was encountered trying to write to the output */
+/*! @abstract the NSException which was encountered trying to write to the output */
 @property(nonatomic, retain) NSException* outputException;
 
 /*! @abstract HTTP response status code set to the client, or 0 if it hasn't been sent */
@@ -59,6 +63,8 @@
 - (void) responseDidComplete:(IHTTPResponse *)response;
 
 @end
+
+#pragma mark - Copyright & License
 
 //
 //  HTTPResponseHandler.h

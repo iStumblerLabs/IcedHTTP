@@ -141,4 +141,6 @@
 
 @end
 
+#pragma mark - Copyright & License
+
 //  Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md

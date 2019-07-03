@@ -8,8 +8,10 @@
 typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     IHTTPStatusCodeUnknown                      = 0,
 
-    // 1xx - Informational response
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.1.1 */
     IHTTPStatus100Continue                      = 100,
+    
+    /*! @biref https://tools.ietf.org/html/rfc2616#section-10.1.2 */
     IHTTPStatus101SwitchingProtocols            = 101,
     
     /*! @brief https://tools.ietf.org/html/rfc2518 */
@@ -18,15 +20,28 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     /*! @brief http://www.iana.org/go/rfc8297 */
     IHTTPStatus103EarlyHints                    = 103,
     
-    // 2xx - Success
+    /* -- 200: Success -- */
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.2.1 */
     IHTTPStatus200OK                            = 200,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.2.2 */
     IHTTPStatus201Created                       = 201,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.2.3 */
     IHTTPStatus202Accepted                      = 202,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.2.4 */
     IHTTPStatus203NonAuthoritativeInformation   = 203,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.2.5 */
     IHTTPStatus204NoContent                     = 204,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.2.6 */
     IHTTPStatus205ResetContent                  = 205,
     
-    /*! @brief https://tools.ietf.org/html/rfc7233 */
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.2.7
+        https://tools.ietf.org/html/rfc7233 */
     IHTTPStatus206PartialContent                = 206,
     
     /*! @brief https://tools.ietf.org/html/rfc4918 */
@@ -38,48 +53,91 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     /*! @brief https://tools.ietf.org/html/rfc3229 */
     IHTTPStatus226IMUsed                        = 226,
 
-    // 3xx - Redirection
+    /* -- 300: Redirect */
+
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.3.1 */
     IHTTPStatus300MultipleChoices               = 300,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.3.2 */
     IHTTPStatus301MovedPermanently              = 301,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.3.3 */
+    IHTTPStatus302Found                         = 302,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.3.4 */
     IHTTPStatus303SeeOther                      = 303,
     
-    /*! @brief https://tools.ietf.org/html/rfc7232 */
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.3.5
+        https://tools.ietf.org/html/rfc7232 */
     IHTTPStatus304NotModified                   = 304,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.3.6 */
     IHTTPStatus305UseProxy                      = 305,
+    
+    /*! @brief UNUSED https://tools.ietf.org/html/rfc2616#section-10.3.7 */
     IHTTPStatus306SwitchProxy                   = 306,
+
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.3.8 */
     IHTTPStatus307TemporaryRedirect             = 307,
     
     /*! @brief https://tools.ietf.org/html/rfc7538 */
     IHTTPStatus308PermanentRedirect             = 308,
-
-    // 4xx Client errors
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.1 */
     IHTTPStatus400BadRequest                    = 400,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.2 */
     IHTTPStatus401Unauthorized                  = 401,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.3 */
     IHTTPStatus402PaymentRequired               = 402,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.4 */
     IHTTPStatus403Forbidden                     = 403,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.5 */
     IHTTPStatus404NotFound                      = 404,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.6 */
     IHTTPStatus405MethodNotAllowed              = 405,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.7 */
     IHTTPStatus406NotAcceptable                 = 406,
     
-    /*! @brief https://tools.ietf.org/html/rfc7235 */
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.8
+        https://tools.ietf.org/html/rfc7235 */
     IHTTPStatus407ProxyAuthenticationRequired   = 407,
     
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.9 */
     IHTTPStatus408RequestTimeout                = 408,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.10 */
     IHTTPStatus409Conflict                      = 409,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.11 */
     IHTTPStatus410Gone                          = 410,
+    
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.12 */
     IHTTPStatus411LengthRequired                = 411,
 
-    /*! @brief https://tools.ietf.org/html/rfc7232 */
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.13
+        https://tools.ietf.org/html/rfc7232 */
     IHTTPStatus412PreconditionFailed            = 412,
 
-    /*! @brief https://tools.ietf.org/html/rfc7231 */
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.14
+        https://tools.ietf.org/html/rfc7231 */
     IHTTPStatus413PayloadTooLarge               = 413,
-    IHTTPStatus414URITooLong                    = 414,
+    
+    /*! https://tools.ietf.org/html/rfc2616#section-10.4.15 */
+    IHTTPStatus414RequestURITooLarge            = 414,
+    
+    /*! https://tools.ietf.org/html/rfc2616#section-10.4.16 */
     IHTTPStatus415UnsupportedMediaType          = 415,
 
     /*! @brief https://tools.ietf.org/html/rfc7233 */
     IHTTPStatus416RangeNotSatisfiable           = 416,
     
+    /*! @brief https://tools.ietf.org/html/rfc2616#section-10.4.18 */
     IHTTPStatus417ExpectationFailed             = 417,
     
     /*! @brief https://tools.ietf.org/html/rfc2324
@@ -108,7 +166,8 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     /*! @brief https://tools.ietf.org/html/rfc7725 */
     IHTTPStatus451UnavailableForLegalReasons    = 451,
 
-    // 5xx Server errors
+    /* -- 5xx: Server errors -- */
+    
     IHTTPStatus500InternalServerError           = 500,
     IHTTPStatus501NotImplemented                = 501,
     IHTTPStatus502BadGateway                    = 502,
@@ -132,7 +191,11 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     IHTTPStatus511NetworkAuthenticationRequired = 511
 };
 
-/*! @brief default and secure ports for the IHTTPServer */
+/*! @brief default and secure ports for the IHTTPServer
+    @discussion because IcedHTTP is written in Objective-C it's not secure to run it as root,
+    which would be required to connect to the standard HTTP (80) and HTTPS (443) ports
+ 
+*/
 typedef NS_ENUM(NSUInteger, IHTTPDefaultPorts) {
     IHTTPDefaultPort = 8080,
     IHTTPSecurePort = 8443
@@ -140,7 +203,7 @@ typedef NS_ENUM(NSUInteger, IHTTPDefaultPorts) {
 
 #pragma mark - HTTP Header Fields
 
-static NSString* const IHTTPHeader                              = @"Header";
+// static NSString* const IHTTPHeaderTemplate                   = @"Header";
 static NSString* const IHTTPContentTypeHeader                   = @"Content-Type";
 static NSString* const IHTTPDateHeader                          = @"Date";
 static NSString* const IHTTPPragmaHeader                        = @"Pragma";
@@ -221,5 +284,7 @@ static NSString* const IHTTPWWWAuthenticateHeader               = @"WWW-Authenti
 static NSString* const IHTTPXFrameOptionsHeader                 = @"X-Frame-Options";
 
 #endif /* IHTTPConstants_h */
+
+#pragma mark - Copyright & License
 
 // Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md

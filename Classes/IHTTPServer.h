@@ -80,16 +80,20 @@ extern NSString* const IHTTPServerStateChangedNotification;
 
 #pragma mark -
 
-/*! @brief rregister a new handler prototype */
+/*! @brief register a new handler prototype
+    @discussion this method will place the handler on the top of the stack,
+    giving it the first opportunit to respond to @selector(canHandleRequest:) */
 - (void) registerHandler:(IHTTPHandler*) prototype;
 
-/*! @brief clear all prototypes, creating a new handlerPrototypes array */
+/*! @brief clear all registered handler prototypes
+    @discussion clears the list of prototypes and registers a default hander which
+    responds to all request with an IHTTPStatus501NotImplemented error */
 - (void) resetPrototypes;
 
-/*! @brief startServer */
+/*! @brief start listening for connections on the designated port */
 - (void) startServer;
 
-/*! @brief stopServer */
+/*! @brief stops accepting new connections, waits for any running hanlders to complete, and closes the socket */
 - (void) stopServer;
 
 @end
@@ -106,6 +110,8 @@ extern NSString* const IHTTPServerStateChangedNotification;
 - (void)IHTTPServerDidStop:(IHTTPServer*)server;
 
 @end
+
+#pragma mark - Copyright & License
 
 //
 //  HTTPServer.h

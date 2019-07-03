@@ -324,6 +324,8 @@ exit:
 
 @end
 
+#pragma mark - Copyright & License
+
 //
 //  HTTPServer.m
 //  TextTransfer
@@ -337,5 +339,5 @@ exit:
 //  this copyright and permission notice. Attribution in compiled projects is
 //  appreciated but not required.
 //
-//  Portions Copyright © 2016 Alf Watt. Available under MIT License (MIT) in README.md
+//  Portions Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md
 //

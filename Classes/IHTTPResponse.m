@@ -133,6 +133,8 @@
 
 @end
 
+#pragma mark - Copyright & License
+
 //
 //  HTTPResponseHandler.m
 //  TextTransfer
