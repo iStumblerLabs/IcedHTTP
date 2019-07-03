@@ -74,7 +74,8 @@ typedef NS_ENUM(NSUInteger, IHTTPStatusCodes) {
     /*! @brief https://tools.ietf.org/html/rfc2616#section-10.3.6 */
     IHTTPStatus305UseProxy                      = 305,
     
-    /*! @brief UNUSED https://tools.ietf.org/html/rfc2616#section-10.3.7 */
+    /*! @brief UNUSED https://tools.ietf.org/html/rfc2616#section-10.3.7
+        https://tools.ietf.org/html/draft-cohen-http-305-306-responses-00 */
     IHTTPStatus306SwitchProxy                   = 306,
 
     /*! @brief https://tools.ietf.org/html/rfc2616#section-10.3.8 */
