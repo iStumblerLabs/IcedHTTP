@@ -117,7 +117,8 @@
 	}
     else if (isDirectory) {
         for (NSString* defaultPage in @[@"index.html", @"default.html"]) {
-            if ([NSFileManager.defaultManager fileExistsAtPath:[self.filePath stringByAppendingPathComponent:defaultPage] isDirectory:&isDirectory] && !isDirectory) {
+            if ([NSFileManager.defaultManager fileExistsAtPath:[self.filePath stringByAppendingPathComponent:defaultPage] isDirectory:&isDirectory]
+             && !isDirectory) {
                 [response sendStatus:IHTTPStatus200OK];
                 [IHTTPFileHandler copyFile:[self.filePath stringByAppendingPathComponent:defaultPage] toStream:response.output];
                 goto complete;
