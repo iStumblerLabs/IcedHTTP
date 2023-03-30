@@ -1,6 +1,8 @@
 #ifndef IHTTPConstants_h
 #define IHTTPConstants_h
 
+#include <Foundation/Foundation.h>
+
 /*! @brief HTTP/1.1 header fields
     https://tools.ietf.org/html/rfc7231
     https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
