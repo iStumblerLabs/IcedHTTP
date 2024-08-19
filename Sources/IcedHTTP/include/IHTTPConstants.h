@@ -204,7 +204,7 @@ typedef NS_ENUM(NSUInteger, IHTTPDefaultPorts) {
     IHTTPSecurePort = 8443
 };
 
-#pragma mark - HTTP Header Fields
+// MARK: - HTTP Header Fields
 
 // static NSString* const IHTTPHeaderTemplate                   = @"Header";
 static NSString* const IHTTPContentTypeHeader                   = @"Content-Type";
@@ -218,7 +218,7 @@ static NSString* const IHTTPUpgradeHeader                       = @"Upgrade";
 static NSString* const IHTTPViaHeader                           = @"Via";
 static NSString* const IHTTPWarningHeader                       = @"Warning";
 
-#pragma mark - HTTP Request Header Fields
+// MARK: - HTTP Request Header Fields
 
 static NSString* const IHTTPAcceptHeader                        = @"Accept";
 static NSString* const IHTTPAcceptCharsetHeader                 = @"Accept-Charset";
@@ -247,7 +247,7 @@ static NSString* const IHTTPReferrerHeader                      = IHTTPRefererHe
 static NSString* const IHTTPTEHeader                            = @"TE";
 static NSString* const IHTTPUserAgentHeader                     = @"User-Agent";
 
-#pragma mark - HTTP Response Header Fields
+// MARK: - HTTP Response Header Fields
 
 static NSString* const IHTTPAccessControlAllowOriginHeader      = @"Access-Control-Allow-Origin";
 static NSString* const IHTTPAccessControlAllowCredentialsHeader = @"Access-Control-Allow-Credentials";
@@ -287,7 +287,3 @@ static NSString* const IHTTPWWWAuthenticateHeader               = @"WWW-Authenti
 static NSString* const IHTTPXFrameOptionsHeader                 = @"X-Frame-Options";
 
 #endif /* IHTTPConstants_h */
-
-#pragma mark - Copyright & License
-
-// Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md

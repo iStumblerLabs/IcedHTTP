@@ -8,7 +8,7 @@
     copied to handle a request, then completed */
 
 /*! @typedef IHTTPRequestBlock
-    @param request the IHTTPRequest*  to evaulate
+    @param request the IHTTPRequest*  to evaluate
     @returns BOOL YES if the handler can handle the request */
 typedef BOOL (^ IHTTPRequestBlock)(IHTTPRequest* request);
 
@@ -19,19 +19,19 @@ typedef BOOL (^ IHTTPRequestBlock)(IHTTPRequest* request);
 typedef NSUInteger (^ IHTTPResponseBlock)(IHTTPRequest* request, IHTTPResponse* response);
 
 /*! @class IHTTPHandler
-    @abstract Handlers are used to service individual reqeusts */
+    @abstract Handlers are used to service individual requests */
 @interface IHTTPHandler : NSObject <NSCopying>
 
 /*! @abstract a handler which will return the file at the path provided */
 + (IHTTPHandler*) handlerWithFilePath:(NSString*) filePath;
 
-/*! @abstract a handler will whill execute the blocks provided to evaulate and service the request */
+/*! @abstract a handler which will execute the blocks provided to evaluate and service the request */
 + (IHTTPHandler*) handlerWithRequestBlock:(IHTTPRequestBlock) requestBlock responseBlock:(IHTTPResponseBlock) responseBlock;
 
 /*! @abstract a handler which will execute the responseBlock for any request */
 + (IHTTPHandler*) handlerWithResponseBlock:(IHTTPResponseBlock) responseBlock;
 
-#pragma mark -
+// MARK: -
 
 /*!
     @method canHandleRequest:
@@ -56,7 +56,3 @@ typedef NSUInteger (^ IHTTPResponseBlock)(IHTTPRequest* request, IHTTPResponse* 
 - (NSUInteger) handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response;
 
 @end
-
-#pragma mark - Copyright & License
-
-// Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md

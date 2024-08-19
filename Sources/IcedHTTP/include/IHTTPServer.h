@@ -19,7 +19,7 @@ typedef NS_ENUM(NSUInteger, IHHTPServerState) {
 /*! @enum IHTTPServerLoggingLevel
     @brief IcedHTTP Server Logging Levels */
 typedef NS_ENUM(NSUInteger, IHTTPServerLoggingLevel) {
-    IHTTPServerLogginSilent,
+    IHTTPServerLoggingSilent,
     IHTTPServerLoggingErrors,
     IHTTPServerLoggingWarnings,
     IHTTPServerLoggingRequests,
@@ -31,7 +31,7 @@ typedef NS_ENUM(NSUInteger, IHTTPServerLoggingLevel) {
     @brief Error numbers for IHTTPServer
 */
 typedef NS_ENUM(NSUInteger, IHTTPServerErrorNumber) {
-    IHTTPSEerverNoError = 0
+    IHTTPServerNoError = 0
 };
 
 /*! @const IHTTPServerDefaultPort */
@@ -40,7 +40,7 @@ extern NSUInteger const IHTTPServerDefaultPort;
 /*! @const IHTTPServerStateChangedNote */
 extern NSString* const IHTTPServerStateChangedNotification;
 
-#pragma mark -
+// MARK: -
 
 /*! @class IHTTPServer 
     @brief IcedHTTPServer object */
@@ -70,19 +70,19 @@ extern NSString* const IHTTPServerStateChangedNotification;
 /*! @brief the delegate of the server */
 @property(nonatomic, assign) id<IHTTPServerDelegate> delegate;
 
-#pragma mark -
+// MARK: -
 
 /*! @brief sharedIHTTPServer server on 8080 */
 + (IHTTPServer*) sharedIHTTPServer;
 
-/*! @brief IHTTPServer on the specifed port */
+/*! @brief IHTTPServer on the specified port */
 + (IHTTPServer*) serverOnPort:(NSUInteger)serverPort;
 
-#pragma mark -
+// MARK: -
 
 /*! @brief register a new handler prototype
     @discussion this method will place the handler on the top of the stack,
-    giving it the first opportunit to respond to @selector(canHandleRequest:) */
+    giving it the first opportunity to respond to @selector(canHandleRequest:) */
 - (void) registerHandler:(IHTTPHandler*) prototype;
 
 /*! @brief clear all registered handler prototypes
@@ -93,38 +93,20 @@ extern NSString* const IHTTPServerStateChangedNotification;
 /*! @brief start listening for connections on the designated port */
 - (void) startServer;
 
-/*! @brief stops accepting new connections, waits for any running hanlders to complete, and closes the socket */
+/*! @brief stops accepting new connections, waits for any running handlers to complete, and closes the socket */
 - (void) stopServer;
 
 @end
 
-#pragma mark - IHTTPServerDelegate Protocol
+// MARK: - IHTTPServerDelegate Protocol
 
 @protocol IHTTPServerDelegate <NSObject>
 @optional
 - (void)IHTTPServerDidStart:(IHTTPServer*)server;
 - (void)IHTTPServerDidReset:(IHTTPServer*)server;
 - (void)IHTTPServer:(IHTTPServer*)server didRegister:(IHTTPHandler*)handler;
-- (void)IHTTPServer:(IHTTPServer*)server didRecieve:(IHTTPRequest*)request;
+- (void)IHTTPServer:(IHTTPServer*)server didReceive:(IHTTPRequest*)request;
 - (void)IHTTPServer:(IHTTPServer*)server didComplete:(IHTTPResponse*)response;
 - (void)IHTTPServerDidStop:(IHTTPServer*)server;
 
 @end
-
-#pragma mark - Copyright & License
-
-//
-//  HTTPServer.h
-//  TextTransfer
-//
-//  Created by Matt Gallagher on 2009/07/13.
-//  Copyright 2009 Matt Gallagher. All rights reserved.
-//
-//  Permission is given to use this source code file, free of charge, in any
-//  project, commercial or otherwise, entirely at your risk, with the condition
-//  that any redistribution (in part or whole) of source code must retain
-//  this copyright and permission notice. Attribution in compiled projects is
-//  appreciated but not required.
-//
-//  Portions Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md
-//

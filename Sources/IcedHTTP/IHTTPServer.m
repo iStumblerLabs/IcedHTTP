@@ -14,7 +14,7 @@
 
 NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChangedNotification";
 
-#pragma mark -
+// MARK: -
 
 @interface IHTTPServer () <IHTTPRequestDelegate, IHTTPResponseDelegate>
 @property(nonatomic, assign) IHHTPServerState serverStateStorage;
@@ -31,12 +31,11 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 
 @end
 
-#pragma mark -
+// MARK: -
 
 @implementation IHTTPServer
 
-+ (IHTTPServer *)sharedIHTTPServer
-{
++ (IHTTPServer *)sharedIHTTPServer {
     static IHTTPServer* sharedIHTTPServer = nil;
 	@synchronized(self) {
 		if (sharedIHTTPServer == nil) {
@@ -47,19 +46,16 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	return sharedIHTTPServer;
 }
 
-+ (IHTTPServer*) serverOnPort:(NSUInteger)serverPort
-{
++ (IHTTPServer*) serverOnPort:(NSUInteger)serverPort {
     IHTTPServer* server = IHTTPServer.new;
     server.serverPort = serverPort;
     return server;  
 }
 
-#pragma mark -
+// MARK: -
 
-- (id)init
-{
-	self = [super init];
-	if (self != nil) {
+- (id)init {
+	if ((self = super.init)) {
         self.serverPort = IHTTPDefaultPort;
 		self.serverStateStorage = IHTTPServerStateIdle;
         self.loggingLevel = IHTTPServerLoggingErrors;
@@ -68,20 +64,17 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	return self;
 }
 
-#pragma mark - Properties
+// MARK: - Properties
 
-- (NSArray*) handlerPrototypes
-{
+- (NSArray*) handlerPrototypes {
     return [NSArray arrayWithArray:self.handlerPrototypesStorage];
 }
 
-- (IHHTPServerState) serverState
-{
+- (IHHTPServerState) serverState {
     return self.serverStateStorage;
 }
 
-- (void)setServerState:(IHHTPServerState)newState
-{
+- (void)setServerState:(IHHTPServerState)newState {
 	if (self.serverStateStorage == newState) {
 		return;
 	}
@@ -91,13 +84,11 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	[NSNotificationCenter.defaultCenter postNotificationName:IHTTPServerStateChangedNotification object:self];
 }
 
-- (NSError*)serverError
-{
+- (NSError*)serverError {
     return self.serverErrorStorage;
 }
 
-- (void)setServerError:(NSError*) anError
-{
+- (void)setServerError:(NSError*) anError {
 	self.serverErrorStorage = anError;
 	
 	if (self.serverErrorStorage) {
@@ -111,16 +102,14 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
 	}
 }
 
-- (NSURL*) rootURL
-{
+- (NSURL*) rootURL {
     // TODO get the .local hostname
     return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:%lu/", (unsigned long)self.serverPort]];
 }
 
-#pragma mark - Prototype Registory
+// MARK: - Prototype Registry
 
-- (void)registerHandler:(IHTTPHandler *)prototype
-{
+- (void)registerHandler:(IHTTPHandler *)prototype {
 	[self.handlerPrototypesStorage insertObject:prototype atIndex:0];
 
     if (self.loggingLevel >= IHTTPServerLoggingDebug) {
@@ -128,8 +117,7 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
     }
 }
 
-- (IHTTPHandler *)prototypeForRequest:(IHTTPRequest *)request
-{
+- (IHTTPHandler *)prototypeForRequest:(IHTTPRequest *)request {
     for (IHTTPHandler* prototype in self.handlerPrototypes) {
         if ([prototype canHandleRequest:request]) {
             return prototype;
@@ -138,8 +126,7 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
     return nil;
 }
 
-- (void)resetPrototypes
-{
+- (void)resetPrototypes {
     self.handlerPrototypesStorage = [NSMutableArray new];
     
     [self registerHandler:[IHTTPHandler handlerWithResponseBlock:^NSUInteger(IHTTPRequest *request, IHTTPResponse *response) {
@@ -154,10 +141,9 @@ NSString * const IHTTPServerStateChangedNotification = @"IHTTPServerStateChanged
     }
 }
 
-#pragma mark -
+// MARK: -
 
-- (void)startServer
-{
+- (void)startServer {
     CFDataRef addressData = nil;
     
     if ((self.serverState != IHTTPServerStateStarting) && (self.serverState != IHTTPServerStateRunning)) {
@@ -217,8 +203,7 @@ exit:
     }
 }
 
-- (void)stopServer
-{
+- (void)stopServer {
 	self.serverState = IHTTPServerStateStopping;
 
     if (self.loggingLevel >= IHTTPServerLoggingDebug) {
@@ -251,19 +236,17 @@ exit:
 	self.serverState = IHTTPServerStateIdle;
 }
 
-#pragma mark -
+// MARK: -
 
-- (void)errorWithName:(NSString *)errorName
-{
+- (void)errorWithName:(NSString *)errorName {
 	self.serverError = [NSError errorWithDomain:@"IHTTPServerError" code:0 userInfo:@{
         NSLocalizedDescriptionKey: NSLocalizedStringFromTable(errorName, @"", @"IHTTPServerErrors")
     }];
 }
 
-#pragma mark -
+// MARK: -
 
-- (void)receiveIncomingConnectionNotification:(NSNotification *)notification
-{
+- (void)receiveIncomingConnectionNotification:(NSNotification *)notification {
 	NSDictionary* userInfo = [notification userInfo];
 	NSFileHandle* requestHandle = [userInfo objectForKey:NSFileHandleNotificationFileHandleItem];
 
@@ -282,10 +265,9 @@ exit:
 	[self.listeningHandle acceptConnectionInBackgroundAndNotify];
 }
 
-#pragma mark - IHTTPRequestDelegate
+// MARK: - IHTTPRequestDelegate
 
-- (void) request:(IHTTPRequest*) request parsedHeaders:(NSDictionary*) headers
-{
+- (void) request:(IHTTPRequest*) request parsedHeaders:(NSDictionary*) headers {
     // NSLog(@"request:%@ parsedHeaders:%@", request, headers);
     IHTTPHandler* prototype = [self prototypeForRequest:request];
     IHTTPHandler* handler = [prototype handlerForRequest:request];
@@ -303,10 +285,9 @@ exit:
     }
 }
 
-#pragma mark - IHTTPResponseDelegate
+// MARK: - IHTTPResponseDelegate
 
-- (void) responseDidComplete:(IHTTPResponse *)response
-{
+- (void) responseDidComplete:(IHTTPResponse *)response {
     for (IHTTPRequest* request in self.serverRequests) {
         if (response.output == request.input) {
             // NSLog(@"responseDidComplete:%@ sentHeaders:%@", response, response.responseHeaders);
@@ -323,21 +304,3 @@ exit:
 }
 
 @end
-
-#pragma mark - Copyright & License
-
-//
-//  HTTPServer.m
-//  TextTransfer
-//
-//  Created by Matt Gallagher on 2009/07/13.
-//  Copyright 2009 Matt Gallagher. All rights reserved.
-//
-//  Permission is given to use this source code file, free of charge, in any
-//  project, commercial or otherwise, entirely at your risk, with the condition
-//  that any redistribution (in part or whole) of source code must retain
-//  this copyright and permission notice. Attribution in compiled projects is
-//  appreciated but not required.
-//
-//  Portions Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md
-//

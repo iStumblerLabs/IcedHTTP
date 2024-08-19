@@ -6,8 +6,7 @@
     @fuction main
     @abstract create and run an IHTTPServer with some example handlers
 */
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     int status = 0;
     @autoreleasepool {
         NSUInteger serverPort = IHTTPDefaultPort;
@@ -70,5 +69,3 @@ int main(int argc, char** argv)
     }
     return status;
 }
-
-// Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md

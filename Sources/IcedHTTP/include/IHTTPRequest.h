@@ -9,7 +9,7 @@
     @brief IHTTPRequest parses the server's input */
 @interface IHTTPRequest : NSObject
 
-/*! @brief the NSFilehandle with the HTTP Request headers and body */
+/*! @brief the NSFileHandle with the HTTP Request headers and body */
 @property(nonatomic, retain) NSFileHandle* input;
 
 @property(nonatomic, assign) id<IHTTPRequestDelegate> delegate;
@@ -26,15 +26,15 @@
 /*! @brief HTTP Request URL */
 @property(nonatomic, readonly) NSURL* requestURL;
 
-/*! @brief HTTP Reqeust Time */
+/*! @brief HTTP Request Time */
 @property(nonatomic, readonly) NSDate* requestTime;
 
-#pragma mark -
+// MARK: -
 
-/*! @brief create a request object ewith the file handle provided */
+/*! @brief create a request object with the file handle provided */
 + (IHTTPRequest*) requestWithInput:(NSFileHandle*) input;
 
-#pragma mark -
+// MARK: -
 
 /*! @brief read the headers of the request */
 - (void) readHeaders;
@@ -47,14 +47,10 @@
 
 @end
 
-#pragma mark -
+// MARK: -
 
 @protocol IHTTPRequestDelegate <NSObject>
 
 - (void) request:(IHTTPRequest*) request parsedHeaders:(NSDictionary*) headers;
 
 @end
-
-#pragma mark - Copyright & License
-
-//  Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md

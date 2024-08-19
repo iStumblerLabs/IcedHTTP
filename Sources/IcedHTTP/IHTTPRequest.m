@@ -1,4 +1,4 @@
-#import "IHTTPRequest.h"
+#import "include/IHTTPRequest.h"
 
 @interface IHTTPRequest ()
 @property(nonatomic, readonly) CFHTTPMessageRef messageRef;
@@ -7,73 +7,63 @@
 
 @end
 
-#pragma mark -
+// MARK: -
 
 @implementation IHTTPRequest
 
-+ (IHTTPRequest*) requestWithMessageRef:(CFHTTPMessageRef) messageRef
-{
-    return [[IHTTPRequest alloc] initWithMessageRef:messageRef];
++ (IHTTPRequest*) requestWithMessageRef:(CFHTTPMessageRef) messageRef {
+    return [IHTTPRequest.alloc initWithMessageRef:messageRef];
 }
 
-#pragma mark - Initilizers
+// MARK: - Initializers
 
-- (id)init
-{
+- (id)init {
     if ((self = super.init)) {
         self.requestTimeStorage = NSDate.date;
     }
     return self;
 }
 
-- (id) initWithMessageRef:(CFHTTPMessageRef) mRef
-{
+- (id) initWithMessageRef:(CFHTTPMessageRef) mRef {
     if ((self = self.init)) {
         self.messageRefStorage = CFBridgingRelease(mRef);
     }
     return self;
 }
 
-#pragma mark - Properties
+// MARK: - Properties
 
-- (CFHTTPMessageRef) messageRef
-{
+- (CFHTTPMessageRef) messageRef {
     return (__bridge CFHTTPMessageRef)self.messageRefStorage;
 }
 
-- (NSString*) requestMethod
-{
+- (NSString*) requestMethod {
     return (self.messageRef ? CFBridgingRelease(CFHTTPMessageCopyRequestMethod(self.messageRef)) : nil);
 }
 
-- (NSDictionary*) requestHeaders
-{
+- (NSDictionary*) requestHeaders {
     return (self.messageRef ? CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(self.messageRef)) : nil);
 }
 
-- (NSURL*) requestURL
-{
+- (NSURL*) requestURL {
     return (self.messageRef ? CFBridgingRelease(CFHTTPMessageCopyRequestURL(self.messageRef)) : nil);
 }
 
-- (NSDate*) requestTime
-{
+- (NSDate*) requestTime {
     return self.requestTimeStorage;
 }
 
-#pragma mark -
+// MARK: -
 
-+ (IHTTPRequest*) requestWithInput:(NSFileHandle*) input
-{
++ (IHTTPRequest*) requestWithInput:(NSFileHandle*) input {
     IHTTPRequest* request = IHTTPRequest.new;
     request.input = input;
     return request;
 }
 
-#pragma mark -
+// MARK: -
 
-- (void) readHeaders
-{
+- (void) readHeaders {
     if (!self.didReadHeaders) {
         self.messageRefStorage = CFBridgingRelease(CFHTTPMessageCreateEmpty(kCFAllocatorDefault, YES));
 		[NSNotificationCenter.defaultCenter
@@ -87,8 +77,7 @@
     }
 }
 
-- (NSData*) readBody
-{
+- (NSData*) readBody {
     if (self.didReadHeaders) {
         return [self.input readDataToEndOfFile];
     }
@@ -98,25 +87,23 @@
     }
 }
 
-- (void) completeRequest
-{
+- (void) completeRequest {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleDataAvailableNotification object:self.input];
     [self.input closeFile];
 }
 
-#pragma mark -
+// MARK: -
 
-- (void)receiveIncomingDataNotification:(NSNotification *)notification
-{
+- (void)receiveIncomingDataNotification:(NSNotification *)notification {
 	NSFileHandle *incomingFileHandle = [notification object];
 	NSData *data = [incomingFileHandle availableData];
 	
-	if ([data length] == 0) { // EoF
+	if (data.length == 0) { // EoF
 		[self completeRequest];
 		return;
 	}
 
-    CFHTTPMessageAppendBytes(self.messageRef, [data bytes], [data length]);
+    CFHTTPMessageAppendBytes(self.messageRef, data.bytes, data.length);
     
 	if (CFHTTPMessageIsHeaderComplete(self.messageRef)) {
         if ([self.delegate respondsToSelector:@selector(request:parsedHeaders:)]) {
@@ -131,16 +118,11 @@
     }
 }
 
-#pragma mark - NSObject
+// MARK: - NSObject
 
-- (NSString*)description
-{
+- (NSString*)description {
     return [NSString stringWithFormat:@"<%@:%p on: %@ headers: %@>",
-        NSStringFromClass([self class]), self, self.requestTime, self.requestHeaders];
+        NSStringFromClass(self.class), self, self.requestTime, self.requestHeaders];
 }
 
 @end
-
-#pragma mark - Copyright & License
-
-//  Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md

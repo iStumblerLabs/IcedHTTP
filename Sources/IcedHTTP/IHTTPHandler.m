@@ -1,74 +1,67 @@
-#import "IHTTPHandler.h"
+#import "include/IHTTPHandler.h"
 
 #import "IHTTPConstants.h"
 #import "IHTTPRequest.h"
 #import "IHTTPResponse.h"
 #import "IHTTPServer.h"
 
-#pragma mark -
+// MARK: -
 
 @interface IHTTPFileHandler : IHTTPHandler
 @property(nonatomic,retain) NSString* filePath;
 @end
 
-#pragma mark -
+// MARK: -
 
 @interface IHTTPBlockHandler : IHTTPHandler
 @property(nonatomic,copy) IHTTPRequestBlock requestBlock;
 @property(nonatomic,copy) IHTTPResponseBlock  responseBlock;
 @end
 
-#pragma mark -
+// MARK: -
 
 @implementation IHTTPHandler
 
-+ (IHTTPHandler*) handlerWithFilePath:(NSString*) filePath
-{
++ (IHTTPHandler*) handlerWithFilePath:(NSString*) filePath {
     IHTTPFileHandler *handler = [IHTTPFileHandler new];
     handler.filePath = filePath;
     return handler;
 }
 
-+ (IHTTPHandler*) handlerWithRequestBlock:(IHTTPRequestBlock) requestBlock responseBlock:(IHTTPResponseBlock) responseBlock
-{
++ (IHTTPHandler*) handlerWithRequestBlock:(IHTTPRequestBlock) requestBlock responseBlock:(IHTTPResponseBlock) responseBlock {
     IHTTPBlockHandler* handler = [IHTTPBlockHandler new];
     handler.requestBlock = requestBlock;
     handler.responseBlock = responseBlock;
     return handler;
 }
 
-+ (IHTTPHandler*) handlerWithResponseBlock:(IHTTPResponseBlock) responseBlock
-{
++ (IHTTPHandler*) handlerWithResponseBlock:(IHTTPResponseBlock) responseBlock {
     IHTTPBlockHandler* handler = [IHTTPBlockHandler new];
     handler.responseBlock = responseBlock;
     return handler;
 }
 
-#pragma mark -
+// MARK: -
 
-- (BOOL)canHandleRequest:(IHTTPRequest*) request
-{
+- (BOOL)canHandleRequest:(IHTTPRequest*) request {
     [[NSException exceptionWithName:@"Unimplemented Method" reason:@"concrete subclases of IHTTPHandler must implement canHandleRequest:" userInfo:nil] raise];
     return NO;
 }
 
-- (IHTTPHandler*) handlerForRequest:(IHTTPRequest*) request
-{
+- (IHTTPHandler*) handlerForRequest:(IHTTPRequest*) request {
     IHTTPHandler* clone = [self copy];
     return clone;
 }
 
-- (NSUInteger)handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response
-{
+- (NSUInteger)handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response {
     [response sendStatus:IHTTPStatus501NotImplemented];
     [response completeResponse];
     return IHTTPStatus501NotImplemented;
 }
 
-#pragma mark - NSCopying
+// MARK: - NSCopying
 
-- (id)copyWithZone:(nullable NSZone *)zone
-{
+- (id)copyWithZone:(nullable NSZone*)zone {
     IHTTPHandler* clone = [IHTTPHandler new];
     return clone;
 }
@@ -76,12 +69,11 @@
 
 @end
 
-#pragma mark -
+// MARK: -
 
 @implementation IHTTPFileHandler
 
-+ (NSUInteger) copyFile:(NSString*)filePath toStream:(NSFileHandle*)outStream
-{
++ (NSUInteger) copyFile:(NSString*)filePath toStream:(NSFileHandle*)outStream {
     NSUInteger chunk = 4096;
     NSUInteger bytes = 0;
     NSMutableData *buffer = [NSMutableData dataWithLength:chunk];
@@ -95,8 +87,7 @@
     return bytes;
 }
 
-- (BOOL)canHandleRequest:(IHTTPRequest*)aRequest
-{
+- (BOOL)canHandleRequest:(IHTTPRequest*)aRequest {
     NSFileManager* fm = [NSFileManager defaultManager];
     BOOL isDirectory = NO;
 	if ([fm fileExistsAtPath:self.filePath isDirectory:&isDirectory]) {
@@ -106,8 +97,7 @@
 	return NO;
 }
 
-- (NSUInteger)handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response
-{
+- (NSUInteger)handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response {
     NSUInteger responseCode = IHTTPStatus500InternalServerError;
     BOOL isDirectory = NO;
 	if ([NSFileManager.defaultManager fileExistsAtPath:self.filePath isDirectory:&isDirectory] && !isDirectory) {
@@ -142,10 +132,9 @@ complete:
     return responseCode;
 }
 
-#pragma mark - NSCopying
+// MARK: - NSCopying
 
-- (id)copyWithZone:(nullable NSZone *)zone
-{
+- (id)copyWithZone:(nullable NSZone *)zone {
     IHTTPFileHandler* clone = [IHTTPFileHandler new];
     clone.filePath = self.filePath;
     return clone;
@@ -153,12 +142,11 @@ complete:
 
 @end
 
-#pragma mark -
+// MARK: -
 
 @implementation IHTTPBlockHandler
 
-- (BOOL)canHandleRequest:(IHTTPRequest*)aRequest
-{
+- (BOOL)canHandleRequest:(IHTTPRequest*)aRequest {
     BOOL canHandle = YES;
     if (self.requestBlock) {
         canHandle = self.requestBlock(aRequest);
@@ -166,15 +154,13 @@ complete:
     return canHandle;
 }
 
-- (NSUInteger)handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response
-{
+- (NSUInteger)handleRequest:(IHTTPRequest*) request withResponse:(IHTTPResponse*) response {
     return self.responseBlock(request, response);
 }
 
-#pragma mark - NSCopying
+// MARK: - NSCopying
 
-- (id)copyWithZone:(nullable NSZone *)zone
-{
+- (id)copyWithZone:(nullable NSZone *)zone {
     IHTTPBlockHandler* clone = [IHTTPBlockHandler new];
     clone.requestBlock = self.requestBlock;
     clone.responseBlock = self.responseBlock;
@@ -182,7 +168,3 @@ complete:
 }
 
 @end
-
-#pragma mark - Copyright & License
-
-//  Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md

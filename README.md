@@ -13,11 +13,10 @@ by [Matt Gallagher](http://www.cocoawithlove.com)
 
 ## Usage
 
-    #import <Foundation/Foundation.h>
-    #import <IcedHTTP/IcedHttp.h>
+    \#import <Foundation/Foundation.h>
+    \#import <IcedHTTP/IcedHttp.h>
 
-    int main(int argc, char** argv)
-    {
+    int main(int argc, char** argv) {
         @autoreleasepool {
             NSUInteger serverPort = 8080;
             IHTTPServer* server = [IHTTPServer serverOnPort:serverPort];
@@ -63,7 +62,7 @@ while the application is in the background, before it is terminated.
 - [IHTTPResponse](IHTTPResponse_h/Classes/IHTTPResponse/index.html)
 - [IHTTPHandler](IHTTPHandler_h/Classes/IHTTPHandler/index.html)
 
-Full [API Documnetation](masterTOC.html) is avaliable after running `make headerdoc`.
+Full [API Documentation](masterTOC.html) is available after running `make headerdoc`.
 
 ### Handler Prototypes
 
@@ -71,13 +70,17 @@ The IHTTPServer class uses handler prototypes to respond to multiple incoming re
 concurrently with low memory overhead:
 
 - After creating the `IHTTPServer`, register `IHTTPHandler` objects with `registerPrototype`
-- `IHTTPRequsts` are created when connections are made to the server, which calls `canHandleRequest:` on each prototype
+- `IHTTPRequests` are created when connections are made to the server, which calls `canHandleRequest:` on each prototype
 - The first handler which responds `YES` is cloned via `handlerForRequest:`
 - `handleRequest:response:` is called on the cloned handler 
 
-## Changelog
+## Change log
 
-### 1.0 : IcedHTTP.framework Initial Release
+### 1.2 — 19 August 2024: Swift Package Manager Support
+
+### 1.1 — Logging
+
+### 1.0 — IcedHTTP.framework Initial Release
 
 - Create `IcedHTTP.xcodeproject` with `IcedHTTP.framework` targets for `MacOS` and `iOS`
 - Add this `README.md` and `Makefile` for automated builds 
@@ -86,13 +89,12 @@ concurrently with low memory overhead:
 - Refactor request and response code into `IHTTPRequest` and `IHTTPResponse`
 - Add `IHTTPHandler` to allow for apps to easily add dynamic responses
 
-### 1.1 : Improved Logging
 
 ## Copyright & Licenses
 
     The MIT License (MIT)
 
-    Copyright (c) 2015-2017 Alf Watt
+    Copyright (c) 2015-2024 Alf Watt
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -106,7 +108,7 @@ concurrently with low memory overhead:
 
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -122,10 +124,3 @@ TextTransfer Example App by Matt Gallagher
     that any redistribution (in part or whole) of source code must retain
     this copyright and permission notice. Attribution in compiled projects is
     appreciated but not required.
-
-<style type="text/css" style="visiblity: hidden !important;">
-body { font-family: helvetica, helvetica-neue, san-serif; padding: 2em; }
-pre { border: 1px solid lightgray; padding: 1em; }
-code { border-bottom: 1px dashed lightgray; padding: .1em; line-height: 1.75em; }
-a { color: #111; }
-</style>

@@ -7,11 +7,11 @@
 
 @end
 
-#pragma mark -
+// MARK: -
 
 @implementation IHTTPResponse
 
-#pragma mark -
+// MARK: -
 
 /*!
     @method responseWithOutput:
@@ -19,21 +19,19 @@
     @prarm outputHandle the NSFileHandle to write output to
     @returns the initialized IHTTPResponse
 */
-+ (IHTTPResponse*)responseWithOutput:(NSFileHandle*)outputHandle
-{
++ (IHTTPResponse*)responseWithOutput:(NSFileHandle*)outputHandle {
 	IHTTPResponse* response = [IHTTPResponse new];
     response.output = outputHandle;
 	return response;
 }
 
-#pragma mark - Properties
+// MARK: - Properties
 
 - (CFHTTPMessageRef) messageRef {
     return (__bridge CFHTTPMessageRef)self.messageRefStorage;
 }
 
-- (NSUInteger)responseStatus
-{
+- (NSUInteger)responseStatus {
     NSUInteger status = 0;
     
     if (self.messageRef) {
@@ -43,20 +41,17 @@
     return status;
 }
 
-- (NSDictionary*)responseHeaders
-{
+- (NSDictionary*)responseHeaders {
     return CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(self.messageRef));
 }
 
-#pragma mark -
+// MARK: -
 
-- (void)sendStatus:(NSUInteger)httpStatus
-{
+- (void)sendStatus:(NSUInteger)httpStatus {
     self.messageRefStorage = CFBridgingRelease(CFHTTPMessageCreateResponse(kCFAllocatorDefault, httpStatus, NULL, kCFHTTPVersion1_1));
 }
 
-- (void)sendHeaders:(NSDictionary *)headers
-{
+- (void)sendHeaders:(NSDictionary *)headers {
     for (NSString* key in headers.allKeys) {
         CFHTTPMessageSetHeaderFieldValue(self.messageRef, (__bridge CFStringRef)key, (__bridge CFStringRef)headers[key]);
     }
@@ -64,7 +59,7 @@
     if (self.messageRef) {
         CFDataRef headerData = CFHTTPMessageCopySerializedMessage(self.messageRef);
         @try {
-            self.didSendHeaders = YES; // set first to prevent lopp via comleteResponse
+            self.didSendHeaders = YES; // set first to prevent loop via completeResponse
             [self.output writeData:(__bridge NSData *)headerData];
         }
         @catch (NSException *exception) {
@@ -77,8 +72,7 @@
     }
 }
 
-- (void)sendBody:(NSData *)bodyData
-{
+- (void)sendBody:(NSData *)bodyData {
     if (!self.didSendHeaders) { // TODO check for the size of the data first
         CFHTTPMessageSetBody(self.messageRef, (__bridge CFDataRef)bodyData);
         [self sendHeaders:nil]; // no headers, complete message body
@@ -95,8 +89,7 @@
     }
 }
 
-- (void)completeResponse
-{
+- (void)completeResponse {
     if (!self.didSendHeaders) {
         [self sendHeaders:nil];
     }
@@ -113,10 +106,9 @@
     }
 }
 
-#pragma mark - NSObject
+// MARK: - NSObject
 
-- (NSString*)description
-{
+- (NSString*)description {
     return [NSString stringWithFormat:@"<%@:%p http status: %ld headers: %@>",
         NSStringFromClass([self class]), self, self.responseStatus, self.responseHeaders];
 }
@@ -126,27 +118,8 @@
 //
 // Stops the response if still running.
 //
-- (void)dealloc
-{
+- (void)dealloc {
     [self completeResponse];
 }
 
 @end
-
-#pragma mark - Copyright & License
-
-//
-//  HTTPResponseHandler.m
-//  TextTransfer
-//
-//  Created by Matt Gallagher on 2009/07/13.
-//  Copyright 2009 Matt Gallagher. All rights reserved.
-//
-//  Permission is given to use this source code file, free of charge, in any
-//  project, commercial or otherwise, entirely at your risk, with the condition
-//  that any redistribution (in part or whole) of source code must retain
-//  this copyright and permission notice. Attribution in compiled projects is
-//  appreciated but not required.
-//
-//  Portions Copyright © 2016-2019 Alf Watt. Available under MIT License (MIT) in README.md
-//
